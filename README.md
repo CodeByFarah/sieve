@@ -99,10 +99,32 @@ Measured on 2026-10-06 on a Windows laptop (details and caveats in
 [performance.md](docs/performance.md)): a demo scan takes **29.3 s** with a cold package cache and
 **10.3 s** (p50, n = 5) warm. 231 backend tests pass.
 
+## Run it yourself
+
+The quickest way to see Sieve working. You only need [Git](https://git-scm.com/downloads) and
+[Docker Desktop](https://www.docker.com/products/docker-desktop/) (running).
+
+```bash
+git clone https://github.com/CodeByFarah/sieve.git
+cd sieve
+docker compose up -d --build                        # first build takes a few minutes
+docker compose exec api python -m sieve.demo.seed   # load the demo data and queue the demo scan
+```
+
+Open **http://localhost:3000**. The demo scan finishes in under a minute; refresh the page and open
+the `sieve-demo` organization to explore findings, call paths, scans and VEX output.
+
+- Stop it with `docker compose down` (add `-v` to also delete the database).
+- If port 3000, 8000 or 5432 is already in use, set `SIEVE_WEB_PORT`, `SIEVE_API_PORT` or
+  `SIEVE_POSTGRES_PORT` before `docker compose up`, for example `SIEVE_WEB_PORT=3001`.
+- Live advisory ingestion is off by default, so the demo uses the recorded snapshot. Set
+  `SIEVE_INGEST_EVERY_HOURS=24` to pull live OSV, KEV and EPSS data instead.
+
 ## Running locally
 
-Requirements: [uv](https://docs.astral.sh/uv/), Docker with Compose, Node 22, and `make` (on
-Windows, run the commands from the [Makefile](Makefile) directly).
+For development (tests, linting, hot reload). Requirements: [uv](https://docs.astral.sh/uv/),
+Docker with Compose, Node 22, and `make` (on Windows, run the commands from the
+[Makefile](Makefile) directly).
 
 ```bash
 make setup     # backend dependencies, backend/.env

@@ -34,10 +34,12 @@ ENV PATH="/app/.venv/bin:$PATH" \
 
 # The only writable path. The root filesystem is read-only in AWS; ECS seeds the task's scratch
 # volume from this VOLUME (ownership included). Temp files and the package cache live here.
-RUN mkdir -p /scratch/tmp /scratch/cache && chown -R 10001 /scratch
+RUN mkdir -p /scratch/tmp /scratch/cache /scratch/artifacts && chown -R 10001 /scratch
 VOLUME ["/scratch"]
+# Artifacts default to a relative var/ path, which is not writable under /app (owned by root).
 ENV TMPDIR=/scratch/tmp \
-    SIEVE_PACKAGE_CACHE_DIR=/scratch/cache
+    SIEVE_PACKAGE_CACHE_DIR=/scratch/cache \
+    SIEVE_ARTIFACT_ROOT=/scratch/artifacts
 
 USER 10001
 EXPOSE 8000

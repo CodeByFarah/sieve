@@ -9,8 +9,16 @@ x-backend: &backend
     SIEVE_ENVIRONMENT: development
     SIEVE_DATABASE_URL: postgresql+psycopg://sieve:sieve@postgres:5432/sieve
     SIEVE_LOG_JSON: "false"
+    # The demo uses the recorded advisory snapshot, so live ingestion is off locally by default.
+    # It would otherwise run first on the single worker and delay the demo scan by minutes.
+    # Set SIEVE_INGEST_EVERY_HOURS=24 to ingest live OSV, KEV and EPSS data.
+    SIEVE_INGEST_OSV_EVERY_HOURS: ${SIEVE_INGEST_EVERY_HOURS:-0}
+    SIEVE_INGEST_KEV_EVERY_HOURS: ${SIEVE_INGEST_EVERY_HOURS:-0}
+    SIEVE_INGEST_EPSS_EVERY_HOURS: ${SIEVE_INGEST_EVERY_HOURS:-0}
   volumes:
     - ./backend/src:/app/src:ro
+    # Shared so the API can serve artifacts (SBOMs, reports) that the worker writes.
+    - artifacts:/scratch/artifacts
 
 services:
   postgres:
@@ -71,3 +79,4 @@ services:
 
 volumes:
   postgres-data:
+  artifacts:
