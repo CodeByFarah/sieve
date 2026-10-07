@@ -38,7 +38,7 @@ export default async function VexPage({ params }: { params: Promise<{ org: strin
           <ul className="divide-y divide-line/60 text-sm">
             {documents.map((doc) => (
               <li key={doc.id} className="flex flex-wrap justify-between gap-4 py-2">
-                <span>{doc.repository_full_name} · {doc.format} · {doc.statement_count} statements</span>
+                <span>{doc.repository_full_name}: {doc.statement_count} statements in {doc.format}</span>
                 <a className="underline underline-offset-4" href={`/api/v1/vex/${doc.id}/download`}>Download</a>
               </li>
             ))}

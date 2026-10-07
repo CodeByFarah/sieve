@@ -18,9 +18,11 @@ export default async function RepositoryPage({ params }: { params: Promise<{ org
       <header>
         <h1 className="text-2xl font-semibold tracking-tight">{repo.full_name}</h1>
         <p className="mt-1 text-muted">
-          {repo.counts.total} open vulnerabilities · <span className="text-reach">{repo.counts.reachable} reachable</span> ·{" "}
+          {repo.counts.total} open vulnerabilities, <span className="text-reach">{repo.counts.reachable} reachable</span>.
+        </p>
+        <p className="mt-3 flex flex-wrap gap-5 text-sm">
           <a className="underline underline-offset-4" href={`/api/v1/repositories/${id}/vex/preview?format=openvex`}>OpenVEX preview</a>
-          {repo.latest_scan && <> · <a className="underline underline-offset-4" href={`/api/v1/scans/${repo.latest_scan.id}/sbom`}>Download SBOM</a></>}
+          {repo.latest_scan && <a className="underline underline-offset-4" href={`/api/v1/scans/${repo.latest_scan.id}/sbom`}>Download the SBOM</a>}
         </p>
       </header>
       <Panel title="Highest-risk findings">
@@ -31,7 +33,7 @@ export default async function RepositoryPage({ params }: { params: Promise<{ org
           {scans.map((scan) => (
             <li key={scan.id} className="flex flex-wrap justify-between gap-4 py-2">
               <Link href={`/app/${org}/scans/${scan.id}`} className="hover:underline">
-                <span className="font-mono">{shortSha(scan.commit_sha)}</span> · {scan.trigger.replace("_", " ")} · {scan.status}
+                <span className="font-mono">{shortSha(scan.commit_sha)}</span>, {scan.trigger.replace("_", " ")} scan, {scan.status}
               </Link>
               <span className="text-muted">{relativeTime(scan.created_at)}</span>
             </li>

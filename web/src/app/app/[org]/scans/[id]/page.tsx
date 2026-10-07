@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { api, type ScanDetail } from "@/lib/api";
 import { ScanProgress } from "@/components/scan-progress";
+import { ScanTimeline } from "@/components/scan-timeline";
 import { Panel } from "@/components/ui";
 
 export const dynamic = "force-dynamic";
@@ -15,6 +16,11 @@ export default async function ScanPage({ params }: { params: Promise<{ org: stri
         <h1 className="text-2xl font-semibold tracking-tight">Scan of {scan.repository_full_name}</h1>
       </header>
       <ScanProgress initial={scan as never} />
+      {done && scan.started_at && scan.finished_at && (
+        <Panel title="Where the time went">
+          <ScanTimeline progress={scan.progress as never} startedAt={scan.started_at} finishedAt={scan.finished_at} />
+        </Panel>
+      )}
       {done && (
         <p>
           <Link href={`/app/${org}/findings`} className="rounded-md bg-text px-4 py-2 text-sm font-medium text-bg">See the findings</Link>
@@ -25,7 +31,7 @@ export default async function ScanPage({ params }: { params: Promise<{ org: stri
           <ul className="space-y-1 text-sm">
             {scan.manifests.map((m) => (
               <li key={m.path}>
-                <span className="font-mono">{m.path}</span> <span className="text-muted">{m.format} · {m.status}</span>
+                <span className="font-mono">{m.path}</span> <span className="text-muted">({m.format}, {m.status})</span>
                 {m.detail && <span className="block text-xs text-muted">{m.detail}</span>}
               </li>
             ))}

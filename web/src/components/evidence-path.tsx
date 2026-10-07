@@ -29,7 +29,7 @@ export function EvidencePath({ steps, entrypoint, vulnerable }: { steps: Step[];
         const last = index === steps.length - 1;
         const uncertain = step.call && !["call", "import", "method"].includes(step.call.edge);
         return (
-          <li key={`${step.symbol}-${index}`} className="grid grid-cols-[1.25rem_1fr] gap-x-4">
+          <li key={`${step.symbol}-${index}`} className="grid grid-cols-[1.25rem_minmax(0,1fr)] gap-x-4">
             <div className="flex flex-col items-center">
               <span
                 aria-hidden
@@ -39,7 +39,7 @@ export function EvidencePath({ steps, entrypoint, vulnerable }: { steps: Step[];
               />
               {!last && <span aria-hidden className={`w-px flex-1 ${uncertain ? "border-l border-dashed border-review" : "bg-line"}`} />}
             </div>
-            <div className={last ? "pb-1" : "pb-6"}>
+            <div className={`min-w-0 ${last ? "pb-1" : "pb-6"}`}>
               <p className="text-xs text-muted">
                 {index === 0 ? ENTRYPOINT[entrypoint] ?? entrypoint : step.package ? `in ${step.package}` : "application code"}
               </p>

@@ -43,6 +43,20 @@ export const ENTRYPOINT: Record<string, string> = {
   module_import: "Module import",
 };
 
+export const STAGE_LABEL: Record<string, string> = {
+  fetch: "Checking out the commit",
+  inventory: "Reading dependency manifests",
+  sbom: "Building the SBOM",
+  match: "Matching advisories",
+  symbols: "Looking up vulnerable functions",
+  callgraph: "Building the call graph",
+  reachability: "Searching for paths to vulnerable code",
+  score: "Scoring risk",
+  report: "Writing the report",
+};
+
+export const STAGE_ORDER = Object.keys(STAGE_LABEL);
+
 export function relativeTime(iso: string | null | undefined): string {
   if (!iso) return "never";
   const seconds = Math.round((Date.now() - new Date(iso).getTime()) / 1000);

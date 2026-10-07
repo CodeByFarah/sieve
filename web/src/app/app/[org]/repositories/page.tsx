@@ -27,7 +27,7 @@ export default async function RepositoriesPage({ params }: { params: Promise<{ o
               <div>
                 <Link href={`/app/${org}/repositories/${repo.id}`} className="text-lg font-medium hover:underline">{repo.full_name}</Link>
                 <p className="text-sm text-muted">
-                  {repo.latest_scan ? `Last scanned ${relativeTime(repo.latest_scan.finished_at ?? repo.latest_scan.created_at)}` : "Not scanned yet"} · {repo.default_branch}
+                  {repo.latest_scan ? `Last scanned ${relativeTime(repo.latest_scan.finished_at ?? repo.latest_scan.created_at)}` : "Not scanned yet"}, on {repo.default_branch}
                 </p>
               </div>
               <div className="text-sm">

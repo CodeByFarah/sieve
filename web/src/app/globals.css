@@ -74,6 +74,28 @@ body {
   }
 }
 
+/* Trace graph: resolved edges draw in once, in call order; unresolved edges fade in after. */
+@keyframes trace-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes trace-fade {
+  from {
+    opacity: 0;
+  }
+}
+.trace-draw {
+  stroke-dasharray: 1;
+  animation: trace-draw 520ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+.trace-fade {
+  animation: trace-fade 400ms ease-out both;
+}
+
 @keyframes pulse-dot {
   50% {
     opacity: 0.35;

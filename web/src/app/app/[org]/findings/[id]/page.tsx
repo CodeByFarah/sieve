@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { api, ApiError, type FindingDetail } from "@/lib/api";
 import { EvidencePath } from "@/components/evidence-path";
+import { TraceGraph } from "@/components/trace-graph";
 import { ReviewPanel } from "@/components/review-panel";
 import { Kev, Panel, Severity, VerdictMark } from "@/components/ui";
 import { ENTRYPOINT, REASONS, VERDICT_LABEL, percent, relativeTime, type Verdict } from "@/lib/format";
@@ -55,7 +56,7 @@ export default async function FindingPage({ params }: { params: Promise<{ org: s
         <p className="mt-1 max-w-3xl text-lg">{f.advisory.summary}</p>
         <dl className="mt-4 flex flex-wrap gap-x-8 gap-y-2 text-sm">
           <div><dt className="text-muted">Package</dt><dd className="font-mono">{f.package} {f.installed_version ?? "(unpinned)"}</dd></div>
-          <div><dt className="text-muted">Severity</dt><dd><Severity level={f.severity} />{f.advisory.cvss_score ? ` · CVSS ${f.advisory.cvss_score}` : ""}</dd></div>
+          <div><dt className="text-muted">Severity</dt><dd><Severity level={f.severity} />{f.advisory.cvss_score ? `, CVSS ${f.advisory.cvss_score}` : ""}</dd></div>
           <div><dt className="text-muted">Confidence</dt><dd className="capitalize">{f.confidence ?? "—"}</dd></div>
           <div><dt className="text-muted">Risk</dt><dd className="tabular-nums">{f.risk_score == null ? "—" : Number(f.risk_score).toFixed(0)} / 100</dd></div>
           <div><dt className="text-muted">Repository</dt><dd>{f.repository_full_name}</dd></div>
@@ -87,12 +88,17 @@ export default async function FindingPage({ params }: { params: Promise<{ org: s
         )}
       </section>
 
-      <div className="grid gap-10 lg:grid-cols-[1.5fr_1fr]">
-        <div className="space-y-10">
+      {path && analysis && (
+        <Panel title={analysis.paths.length > 1 ? `The ${analysis.paths.length} strongest paths` : "The path"}>
+          <TraceGraph paths={analysis.paths as never} verdict={analysis.verdict} />
+        </Panel>
+      )}
+
+      <div className="grid gap-10 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+        <div className="min-w-0 space-y-10">
           {path ? (
-            <Panel title={verdict === "reachable" ? "Evidence: the call path" : "Closest path found"}>
+            <Panel title={verdict === "reachable" ? "Line by line, along the strongest path" : "Closest path found, line by line"}>
               <EvidencePath steps={path.steps as never} entrypoint={path.entrypoint_kind} vulnerable={analysis?.verdict === "reachable"} />
-              {analysis && analysis.paths.length > 1 && <p className="mt-4 text-sm text-muted">{analysis.paths.length - 1} more path{analysis.paths.length > 2 ? "s" : ""} reach other vulnerable symbols.</p>}
             </Panel>
           ) : (
             <Panel title="Evidence">
@@ -112,7 +118,7 @@ export default async function FindingPage({ params }: { params: Promise<{ org: s
                       <p className="font-mono text-sm">{symbol.qualified_name}</p>
                       <p className="text-sm">
                         <span className={symbol.origin === "ai" ? "text-review" : "text-muted"}>{ORIGIN[symbol.origin]}</span>
-                        {" · "}
+                        {", "}
                         <span className={symbol.verification === "verified" ? "text-clear" : symbol.verification === "rejected" ? "text-reach" : "text-muted"}>
                           {symbol.verification === "verified" ? "Verified in package source" : symbol.verification === "rejected" ? "Rejected by verification" : "Not yet verified"}
                         </span>

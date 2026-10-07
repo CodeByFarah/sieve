@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { STAGE_LABEL } from "@/lib/format";
 
 type Stage = { status: string; duration_seconds?: number; counts?: Record<string, unknown> };
 type ScanState = {
@@ -16,18 +17,6 @@ type ScanState = {
   finished_at: string | null;
   error_message: string | null;
   correlation_id?: string | null;
-};
-
-const STAGE_LABEL: Record<string, string> = {
-  fetch: "Checking out the commit",
-  inventory: "Reading dependency manifests",
-  sbom: "Building the SBOM",
-  match: "Matching advisories",
-  symbols: "Looking up vulnerable functions",
-  callgraph: "Building the call graph",
-  reachability: "Searching for paths to vulnerable code",
-  score: "Scoring risk",
-  report: "Writing the report",
 };
 
 function summary(name: string, counts: Record<string, unknown> | undefined): string | null {

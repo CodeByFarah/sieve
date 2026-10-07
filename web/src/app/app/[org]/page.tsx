@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { api, ApiError, type Overview } from "@/lib/api";
+import { api, ApiError, type FindingPage, type Overview } from "@/lib/api";
+import { ExposureMap, type MapItem } from "@/components/exposure-map";
 import { FindingTable } from "@/components/finding-table";
 import { DemoRunButton } from "@/components/demo-run-button";
 import { EmptyState, Panel } from "@/components/ui";
@@ -24,8 +25,12 @@ const ACTIONS: Record<string, string> = {
 export default async function OverviewPage({ params }: { params: Promise<{ org: string }> }) {
   const { org } = await params;
   let data: Overview;
+  let all: FindingPage;
   try {
-    data = await api<Overview>(`/api/v1/orgs/${org}/overview`);
+    [data, all] = await Promise.all([
+      api<Overview>(`/api/v1/orgs/${org}/overview`),
+      api<FindingPage>(`/api/v1/orgs/${org}/findings?limit=200`),
+    ]);
   } catch (error) {
     if (error instanceof ApiError && error.status === 404) notFound();
     throw error;
@@ -73,6 +78,12 @@ export default async function OverviewPage({ params }: { params: Promise<{ org: 
         </section>
       )}
 
+      {all.items.length > 0 && (
+        <Panel title="Where the risk sits">
+          <ExposureMap items={all.items as MapItem[]} org={org} />
+        </Panel>
+      )}
+
       {data.top_findings.length > 0 && (
         <Panel title="Fix these first" aside={<Link href={`/app/${org}/findings?verdict=reachable`} className="text-sm text-muted hover:text-text">All reachable</Link>}>
           <FindingTable org={org} items={data.top_findings} />
@@ -113,8 +124,8 @@ export default async function OverviewPage({ params }: { params: Promise<{ org: 
             <li key={repo.id} className="flex flex-wrap items-baseline justify-between gap-4 py-3">
               <Link href={`/app/${org}/repositories/${repo.id}`} className="font-medium hover:underline">{repo.full_name}</Link>
               <span className="text-sm text-muted">
-                <span className="text-reach">{repo.counts.reachable} reachable</span> · {repo.counts.needs_review} to review · {repo.counts.not_reached} not reached ·
-                scanned {relativeTime(repo.latest_scan?.finished_at ?? repo.latest_scan?.created_at)}
+                <span className="text-reach">{repo.counts.reachable} reachable</span>, {repo.counts.needs_review} to review and{" "}
+                {repo.counts.not_reached} not reached, scanned {relativeTime(repo.latest_scan?.finished_at ?? repo.latest_scan?.created_at)}
               </span>
             </li>
           ))}
