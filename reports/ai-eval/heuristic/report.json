@@ -1,0 +1,801 @@
+{
+  "generated_at": "2026-10-06T13:40:01+00:00",
+  "provider": "heuristic",
+  "model": "diff-heuristic-v1",
+  "prompt_version": "symbol-extraction/v1",
+  "cases": 32,
+  "indicative_only": false,
+  "raw": {
+    "precision": 0.17045454545454544,
+    "recall": 0.3125
+  },
+  "accepted": {
+    "precision": 0.4411764705882353,
+    "recall": 0.3125
+  },
+  "hallucination_rate": 0.5869565217391305,
+  "hallucinations_accepted": 0,
+  "unacceptable_hit_rate": 0.0,
+  "structured_output_failure_rate": 0.0,
+  "latency_ms": {
+    "p50": 0.0,
+    "max": 0
+  },
+  "tokens": {
+    "input": 0,
+    "output": 0
+  },
+  "estimated_cost_usd": null,
+  "per_case": [
+    {
+      "case_id": "certifi-ghsa-43fp-rhv2-5gv8",
+      "expected": [
+        "certifi.core.where"
+      ],
+      "acceptable": [],
+      "proposed": [],
+      "accepted": [],
+      "nonexistent": [],
+      "unacceptable_hits": [],
+      "schema_invalid": false,
+      "latency_ms": 0,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_usd": null
+    },
+    {
+      "case_id": "certifi-ghsa-xqr8-7jwr-rhp7",
+      "expected": [
+        "certifi.core.where"
+      ],
+      "acceptable": [],
+      "proposed": [],
+      "accepted": [],
+      "nonexistent": [],
+      "unacceptable_hits": [],
+      "schema_invalid": false,
+      "latency_ms": 0,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_usd": null
+    },
+    {
+      "case_id": "flask-ghsa-562c-5r94-xh97",
+      "expected": [
+        "flask.json.loads"
+      ],
+      "acceptable": [],
+      "proposed": [
+        "flask.json._load_arg_defaults",
+        "flask.json.detect_encoding",
+        "flask.json.loads",
+        "flask.wrappers.get_json"
+      ],
+      "accepted": [
+        "flask.json._load_arg_defaults",
+        "flask.json.loads"
+      ],
+      "nonexistent": [
+        "flask.json.detect_encoding",
+        "flask.wrappers.get_json"
+      ],
+      "unacceptable_hits": [],
+      "schema_invalid": false,
+      "latency_ms": 0,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_usd": null
+    },
+    {
+      "case_id": "flask-ghsa-m2qf-hxjv-5gpq",
+      "expected": [
+        "flask.sessions.SecureCookieSessionInterface.save_session"
+      ],
+      "acceptable": [],
+      "proposed": [
+        "flask.sessions.save_session"
+      ],
+      "accepted": [],
+      "nonexistent": [
+        "flask.sessions.save_session"
+      ],
+      "unacceptable_hits": [],
+      "schema_invalid": false,
+      "latency_ms": 0,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_usd": null
+    },
+    {
+      "case_id": "idna-ghsa-jjg7-2v4v-x38h",
+      "expected": [
+        "idna.core.encode"
+      ],
+      "acceptable": [],
+      "proposed": [],
+      "accepted": [],
+      "nonexistent": [],
+      "unacceptable_hits": [],
+      "schema_invalid": false,
+      "latency_ms": 0,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_usd": null
+    },
+    {
+      "case_id": "jinja2-ghsa-462w-v97r-4m45",
+      "expected": [
+        "jinja2.sandbox.SandboxedEnvironment"
+      ],
+      "acceptable": [],
+      "proposed": [],
+      "accepted": [],
+      "nonexistent": [],
+      "unacceptable_hits": [],
+      "schema_invalid": false,
+      "latency_ms": 0,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_usd": null
+    },
+    {
+      "case_id": "jinja2-ghsa-cpwx-vrp4-4pq7",
+      "expected": [
+        "jinja2.sandbox.SandboxedEnvironment"
+      ],
+      "acceptable": [],
+      "proposed": [
+        "jinja2.filters.do_reverse"
+      ],
+      "accepted": [
+        "jinja2.filters.do_reverse"
+      ],
+      "nonexistent": [],
+      "unacceptable_hits": [],
+      "schema_invalid": false,
+      "latency_ms": 0,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_usd": null
+    },
+    {
+      "case_id": "jinja2-ghsa-g3rq-g295-4j3m",
+      "expected": [
+        "jinja2.utils.urlize"
+      ],
+      "acceptable": [],
+      "proposed": [
+        "jinja2.utils.urlize"
+      ],
+      "accepted": [
+        "jinja2.utils.urlize"
+      ],
+      "nonexistent": [],
+      "unacceptable_hits": [],
+      "schema_invalid": false,
+      "latency_ms": 0,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_usd": null
+    },
+    {
+      "case_id": "jinja2-ghsa-h5c8-rqwp-cp95",
+      "expected": [
+        "jinja2.filters.do_xmlattr"
+      ],
+      "acceptable": [],
+      "proposed": [
+        "jinja2.filters.do_items",
+        "jinja2.filters.do_xmlattr"
+      ],
+      "accepted": [
+        "jinja2.filters.do_xmlattr"
+      ],
+      "nonexistent": [
+        "jinja2.filters.do_items"
+      ],
+      "unacceptable_hits": [],
+      "schema_invalid": false,
+      "latency_ms": 0,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_usd": null
+    },
+    {
+      "case_id": "jinja2-ghsa-h75v-3vvj-5mfj",
+      "expected": [
+        "jinja2.filters.do_xmlattr"
+      ],
+      "acceptable": [],
+      "proposed": [
+        "jinja2.filters.do_items",
+        "jinja2.filters.do_xmlattr"
+      ],
+      "accepted": [
+        "jinja2.filters.do_xmlattr"
+      ],
+      "nonexistent": [
+        "jinja2.filters.do_items"
+      ],
+      "unacceptable_hits": [],
+      "schema_invalid": false,
+      "latency_ms": 0,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_usd": null
+    },
+    {
+      "case_id": "jinja2-ghsa-q2x7-8rv6-6q7h",
+      "expected": [
+        "jinja2.sandbox.SandboxedEnvironment"
+      ],
+      "acceptable": [],
+      "proposed": [
+        "jinja2.sandbox.call",
+        "jinja2.sandbox.format_string",
+        "jinja2.sandbox.getattr",
+        "jinja2.sandbox.getitem",
+        "jinja2.sandbox.inspect_format_method",
+        "jinja2.sandbox.unsafe_undefined",
+        "jinja2.sandbox.wrap_str_format",
+        "jinja2.sandbox.wrapper"
+      ],
+      "accepted": [
+        "jinja2.sandbox.inspect_format_method"
+      ],
+      "nonexistent": [
+        "jinja2.sandbox.call",
+        "jinja2.sandbox.format_string",
+        "jinja2.sandbox.getattr",
+        "jinja2.sandbox.getitem",
+        "jinja2.sandbox.unsafe_undefined",
+        "jinja2.sandbox.wrap_str_format",
+        "jinja2.sandbox.wrapper"
+      ],
+      "unacceptable_hits": [],
+      "schema_invalid": false,
+      "latency_ms": 0,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_usd": null
+    },
+    {
+      "case_id": "pyjwt-ghsa-ffqj-6fqr-9h24",
+      "expected": [
+        "jwt.algorithms.HMACAlgorithm.prepare_key"
+      ],
+      "acceptable": [],
+      "proposed": [
+        "jwt.algorithms.__init__",
+        "jwt.utils.is_pem_format",
+        "jwt.utils.is_ssh_key",
+        "jwt.utils.raw_to_der_signature"
+      ],
+      "accepted": [
+        "jwt.utils.raw_to_der_signature"
+      ],
+      "nonexistent": [
+        "jwt.algorithms.__init__",
+        "jwt.utils.is_pem_format",
+        "jwt.utils.is_ssh_key"
+      ],
+      "unacceptable_hits": [],
+      "schema_invalid": false,
+      "latency_ms": 0,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_usd": null
+    },
+    {
+      "case_id": "pyyaml-ghsa-6757-jp84-gxfx-injection",
+      "expected": [
+        "yaml.full_load",
+        "yaml.full_load_all",
+        "yaml.load",
+        "yaml.load_all",
+        "yaml.loader.FullLoader"
+      ],
+      "acceptable": [],
+      "proposed": [
+        "yaml.YAMLLoadWarning",
+        "yaml.compose_all",
+        "yaml.full_load",
+        "yaml.full_load_all",
+        "yaml.load",
+        "yaml.load_all",
+        "yaml.load_warning",
+        "yaml.safe_load_all",
+        "yaml.unsafe_load",
+        "yaml.unsafe_load_all"
+      ],
+      "accepted": [
+        "yaml.compose_all",
+        "yaml.full_load",
+        "yaml.full_load_all",
+        "yaml.load",
+        "yaml.load_all",
+        "yaml.load_warning",
+        "yaml.safe_load_all",
+        "yaml.unsafe_load",
+        "yaml.unsafe_load_all"
+      ],
+      "nonexistent": [],
+      "unacceptable_hits": [],
+      "schema_invalid": false,
+      "latency_ms": 0,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_usd": null
+    },
+    {
+      "case_id": "pyyaml-ghsa-6757-jp84-gxfx",
+      "expected": [
+        "yaml.full_load",
+        "yaml.full_load_all",
+        "yaml.load",
+        "yaml.load_all",
+        "yaml.loader.FullLoader"
+      ],
+      "acceptable": [],
+      "proposed": [
+        "yaml.YAMLLoadWarning",
+        "yaml.compose_all",
+        "yaml.full_load",
+        "yaml.full_load_all",
+        "yaml.load",
+        "yaml.load_all",
+        "yaml.load_warning",
+        "yaml.safe_load_all",
+        "yaml.unsafe_load",
+        "yaml.unsafe_load_all"
+      ],
+      "accepted": [
+        "yaml.compose_all",
+        "yaml.full_load",
+        "yaml.full_load_all",
+        "yaml.load",
+        "yaml.load_all",
+        "yaml.load_warning",
+        "yaml.safe_load_all",
+        "yaml.unsafe_load",
+        "yaml.unsafe_load_all"
+      ],
+      "nonexistent": [],
+      "unacceptable_hits": [],
+      "schema_invalid": false,
+      "latency_ms": 0,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_usd": null
+    },
+    {
+      "case_id": "pyyaml-ghsa-8q59-q68h-6hv4-injection",
+      "expected": [
+        "yaml.full_load",
+        "yaml.full_load_all",
+        "yaml.load",
+        "yaml.load_all",
+        "yaml.loader.FullLoader"
+      ],
+      "acceptable": [],
+      "proposed": [
+        "yaml.constructor.construct_python_object_new",
+        "yaml.constructor.set_python_instance_state",
+        "yaml.constructor.construct_python_object_new",
+        "yaml.constructor.set_python_instance_state"
+      ],
+      "accepted": [],
+      "nonexistent": [
+        "yaml.constructor.construct_python_object_new",
+        "yaml.constructor.set_python_instance_state",
+        "yaml.constructor.construct_python_object_new",
+        "yaml.constructor.set_python_instance_state"
+      ],
+      "unacceptable_hits": [],
+      "schema_invalid": false,
+      "latency_ms": 0,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_usd": null
+    },
+    {
+      "case_id": "pyyaml-ghsa-8q59-q68h-6hv4",
+      "expected": [
+        "yaml.full_load",
+        "yaml.full_load_all",
+        "yaml.load",
+        "yaml.load_all",
+        "yaml.loader.FullLoader"
+      ],
+      "acceptable": [],
+      "proposed": [
+        "yaml.constructor.construct_python_object_new",
+        "yaml.constructor.set_python_instance_state",
+        "yaml.constructor.construct_python_object_new",
+        "yaml.constructor.set_python_instance_state"
+      ],
+      "accepted": [],
+      "nonexistent": [
+        "yaml.constructor.construct_python_object_new",
+        "yaml.constructor.set_python_instance_state",
+        "yaml.constructor.construct_python_object_new",
+        "yaml.constructor.set_python_instance_state"
+      ],
+      "unacceptable_hits": [],
+      "schema_invalid": false,
+      "latency_ms": 0,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_usd": null
+    },
+    {
+      "case_id": "requests-ghsa-9hjg-9r4m-mvj7-injection",
+      "expected": [
+        "requests.utils.get_netrc_auth"
+      ],
+      "acceptable": [],
+      "proposed": [
+        "requests.utils.get_netrc_auth"
+      ],
+      "accepted": [
+        "requests.utils.get_netrc_auth"
+      ],
+      "nonexistent": [],
+      "unacceptable_hits": [],
+      "schema_invalid": false,
+      "latency_ms": 0,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_usd": null
+    },
+    {
+      "case_id": "requests-ghsa-9hjg-9r4m-mvj7",
+      "expected": [
+        "requests.utils.get_netrc_auth"
+      ],
+      "acceptable": [],
+      "proposed": [
+        "requests.utils.get_netrc_auth"
+      ],
+      "accepted": [
+        "requests.utils.get_netrc_auth"
+      ],
+      "nonexistent": [],
+      "unacceptable_hits": [],
+      "schema_invalid": false,
+      "latency_ms": 0,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_usd": null
+    },
+    {
+      "case_id": "requests-ghsa-9wx4-h78v-vm56-injection",
+      "expected": [
+        "requests.adapters.HTTPAdapter.get_connection"
+      ],
+      "acceptable": [],
+      "proposed": [
+        "requests.adapters.SOCKSProxyManager",
+        "requests.adapters._get_connection",
+        "requests.adapters._urllib3_request_context",
+        "requests.adapters.build_response",
+        "requests.adapters.send"
+      ],
+      "accepted": [
+        "requests.adapters.SOCKSProxyManager"
+      ],
+      "nonexistent": [
+        "requests.adapters._get_connection",
+        "requests.adapters._urllib3_request_context",
+        "requests.adapters.build_response",
+        "requests.adapters.send"
+      ],
+      "unacceptable_hits": [],
+      "schema_invalid": false,
+      "latency_ms": 0,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_usd": null
+    },
+    {
+      "case_id": "requests-ghsa-9wx4-h78v-vm56",
+      "expected": [
+        "requests.adapters.HTTPAdapter.get_connection"
+      ],
+      "acceptable": [],
+      "proposed": [
+        "requests.adapters.SOCKSProxyManager",
+        "requests.adapters._get_connection",
+        "requests.adapters._urllib3_request_context",
+        "requests.adapters.build_response",
+        "requests.adapters.send"
+      ],
+      "accepted": [
+        "requests.adapters.SOCKSProxyManager"
+      ],
+      "nonexistent": [
+        "requests.adapters._get_connection",
+        "requests.adapters._urllib3_request_context",
+        "requests.adapters.build_response",
+        "requests.adapters.send"
+      ],
+      "unacceptable_hits": [],
+      "schema_invalid": false,
+      "latency_ms": 0,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_usd": null
+    },
+    {
+      "case_id": "requests-ghsa-j8r2-6x86-q33q-injection",
+      "expected": [
+        "requests.sessions.SessionRedirectMixin.rebuild_proxies"
+      ],
+      "acceptable": [],
+      "proposed": [
+        "requests.sessions.rebuild_proxies"
+      ],
+      "accepted": [],
+      "nonexistent": [
+        "requests.sessions.rebuild_proxies"
+      ],
+      "unacceptable_hits": [],
+      "schema_invalid": false,
+      "latency_ms": 0,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_usd": null
+    },
+    {
+      "case_id": "requests-ghsa-j8r2-6x86-q33q",
+      "expected": [
+        "requests.sessions.SessionRedirectMixin.rebuild_proxies"
+      ],
+      "acceptable": [],
+      "proposed": [
+        "requests.sessions.rebuild_proxies"
+      ],
+      "accepted": [],
+      "nonexistent": [
+        "requests.sessions.rebuild_proxies"
+      ],
+      "unacceptable_hits": [],
+      "schema_invalid": false,
+      "latency_ms": 0,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_usd": null
+    },
+    {
+      "case_id": "requests-ghsa-x84v-xcm2-53pg-injection",
+      "expected": [
+        "requests.sessions.SessionRedirectMixin.rebuild_auth"
+      ],
+      "acceptable": [],
+      "proposed": [
+        "requests.sessions.get_redirect_target",
+        "requests.sessions.rebuild_auth",
+        "requests.sessions.should_strip_auth"
+      ],
+      "accepted": [],
+      "nonexistent": [
+        "requests.sessions.get_redirect_target",
+        "requests.sessions.rebuild_auth",
+        "requests.sessions.should_strip_auth"
+      ],
+      "unacceptable_hits": [],
+      "schema_invalid": false,
+      "latency_ms": 0,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_usd": null
+    },
+    {
+      "case_id": "requests-ghsa-x84v-xcm2-53pg",
+      "expected": [
+        "requests.sessions.SessionRedirectMixin.rebuild_auth"
+      ],
+      "acceptable": [],
+      "proposed": [
+        "requests.sessions.get_redirect_target",
+        "requests.sessions.rebuild_auth",
+        "requests.sessions.should_strip_auth"
+      ],
+      "accepted": [],
+      "nonexistent": [
+        "requests.sessions.get_redirect_target",
+        "requests.sessions.rebuild_auth",
+        "requests.sessions.should_strip_auth"
+      ],
+      "unacceptable_hits": [],
+      "schema_invalid": false,
+      "latency_ms": 0,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_usd": null
+    },
+    {
+      "case_id": "urllib3-ghsa-34jh-p97f-mpxf",
+      "expected": [
+        "urllib3.poolmanager.PoolManager.urlopen"
+      ],
+      "acceptable": [],
+      "proposed": [
+        "urllib3.util.retry.Retry"
+      ],
+      "accepted": [],
+      "nonexistent": [],
+      "unacceptable_hits": [],
+      "schema_invalid": false,
+      "latency_ms": 0,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_usd": null
+    },
+    {
+      "case_id": "urllib3-ghsa-gwvm-45gx-3cf8",
+      "expected": [
+        "urllib3.poolmanager.PoolManager.urlopen"
+      ],
+      "acceptable": [],
+      "proposed": [
+        "urllib3.poolmanager.urlopen",
+        "urllib3.util.retry.__init__"
+      ],
+      "accepted": [],
+      "nonexistent": [
+        "urllib3.poolmanager.urlopen",
+        "urllib3.util.retry.__init__"
+      ],
+      "unacceptable_hits": [],
+      "schema_invalid": false,
+      "latency_ms": 0,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_usd": null
+    },
+    {
+      "case_id": "urllib3-ghsa-mh33-7rrq-662w",
+      "expected": [
+        "urllib3.util.ssl_.ssl_wrap_socket"
+      ],
+      "acceptable": [],
+      "proposed": [
+        "urllib3.contrib.pyopenssl.idna_encode",
+        "urllib3.poolmanager.urlopen",
+        "urllib3.util.retry.__init__",
+        "urllib3.util.ssl_.ssl_wrap_socket"
+      ],
+      "accepted": [
+        "urllib3.util.ssl_.ssl_wrap_socket"
+      ],
+      "nonexistent": [
+        "urllib3.contrib.pyopenssl.idna_encode",
+        "urllib3.poolmanager.urlopen",
+        "urllib3.util.retry.__init__"
+      ],
+      "unacceptable_hits": [],
+      "schema_invalid": false,
+      "latency_ms": 0,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_usd": null
+    },
+    {
+      "case_id": "urllib3-ghsa-v845-jxx5-vc9f",
+      "expected": [
+        "urllib3.poolmanager.PoolManager.urlopen"
+      ],
+      "acceptable": [],
+      "proposed": [
+        "urllib3.util.retry.Retry"
+      ],
+      "accepted": [],
+      "nonexistent": [],
+      "unacceptable_hits": [],
+      "schema_invalid": false,
+      "latency_ms": 0,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_usd": null
+    },
+    {
+      "case_id": "werkzeug-ghsa-2g68-c3qc-8985",
+      "expected": [
+        "werkzeug.debug.DebuggedApplication"
+      ],
+      "acceptable": [],
+      "proposed": [
+        "werkzeug.debug.__call__",
+        "werkzeug.debug.__init__",
+        "werkzeug.debug.check_host_trust",
+        "werkzeug.debug.check_pin_trust",
+        "werkzeug.debug.debug_application",
+        "werkzeug.debug.execute_command",
+        "werkzeug.debug.log_pin_request",
+        "werkzeug.debug.pin_auth",
+        "werkzeug.sansio.utils.host_is_trusted",
+        "werkzeug.serving.run_simple"
+      ],
+      "accepted": [
+        "werkzeug.serving.run_simple"
+      ],
+      "nonexistent": [
+        "werkzeug.debug.__call__",
+        "werkzeug.debug.__init__",
+        "werkzeug.debug.check_host_trust",
+        "werkzeug.debug.check_pin_trust",
+        "werkzeug.debug.debug_application",
+        "werkzeug.debug.execute_command",
+        "werkzeug.debug.log_pin_request",
+        "werkzeug.debug.pin_auth",
+        "werkzeug.sansio.utils.host_is_trusted"
+      ],
+      "unacceptable_hits": [],
+      "schema_invalid": false,
+      "latency_ms": 0,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_usd": null
+    },
+    {
+      "case_id": "werkzeug-ghsa-gq9m-qvpx-68hc",
+      "expected": [
+        "werkzeug.debug.get_pin_and_cookie_name"
+      ],
+      "acceptable": [],
+      "proposed": [
+        "werkzeug.debug.get_machine_id"
+      ],
+      "accepted": [
+        "werkzeug.debug.get_machine_id"
+      ],
+      "nonexistent": [],
+      "unacceptable_hits": [],
+      "schema_invalid": false,
+      "latency_ms": 0,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_usd": null
+    },
+    {
+      "case_id": "werkzeug-ghsa-j544-7q9p-6xp8",
+      "expected": [
+        "werkzeug.security.safe_join"
+      ],
+      "acceptable": [],
+      "proposed": [],
+      "accepted": [],
+      "nonexistent": [],
+      "unacceptable_hits": [],
+      "schema_invalid": false,
+      "latency_ms": 0,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_usd": null
+    },
+    {
+      "case_id": "werkzeug-ghsa-px8h-6qxv-m22q",
+      "expected": [
+        "werkzeug.http.parse_cookie"
+      ],
+      "acceptable": [],
+      "proposed": [
+        "werkzeug._internal._cookie_parse_impl",
+        "werkzeug.sansio.http.parse_cookie"
+      ],
+      "accepted": [
+        "werkzeug._internal._cookie_parse_impl"
+      ],
+      "nonexistent": [
+        "werkzeug.sansio.http.parse_cookie"
+      ],
+      "unacceptable_hits": [],
+      "schema_invalid": false,
+      "latency_ms": 0,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_usd": null
+    }
+  ]
+}

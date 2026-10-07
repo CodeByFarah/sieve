@@ -1,0 +1,92 @@
+{
+  "label": "2026-10-06-cold",
+  "date": "2026-10-06T15:48:37+00:00",
+  "machine": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 186 Stepping 2, GenuineIntel",
+    "cpu_count": 12,
+    "python": "3.13.16"
+  },
+  "command": "python benchmarks/bench.py --api http://127.0.0.1:8010 --sequential 1 --api-requests 0 --label 2026-10-06-cold --out ../reports/benchmarks",
+  "sequential": {
+    "scans": 1,
+    "failed": [],
+    "findings": [
+      100
+    ],
+    "queue_wait_seconds": {
+      "n": 1,
+      "p50": 0.899,
+      "p95": 0.899,
+      "max": 0.899
+    },
+    "run_seconds": {
+      "n": 1,
+      "p50": 28.385,
+      "p95": 28.385,
+      "max": 28.385
+    },
+    "end_to_end_seconds": {
+      "n": 1,
+      "p50": 29.284,
+      "p95": 29.284,
+      "max": 29.284
+    },
+    "stages_seconds": {
+      "sbom": {
+        "n": 1,
+        "p50": 0.055,
+        "p95": 0.055,
+        "max": 0.055
+      },
+      "fetch": {
+        "n": 1,
+        "p50": 0.025,
+        "p95": 0.025,
+        "max": 0.025
+      },
+      "match": {
+        "n": 1,
+        "p50": 0.638,
+        "p95": 0.638,
+        "max": 0.638
+      },
+      "score": {
+        "n": 1,
+        "p50": 1.52,
+        "p95": 1.52,
+        "max": 1.52
+      },
+      "report": {
+        "n": 1,
+        "p50": 0.056,
+        "p95": 0.056,
+        "max": 0.056
+      },
+      "symbols": {
+        "n": 1,
+        "p50": 0.58,
+        "p95": 0.58,
+        "max": 0.58
+      },
+      "callgraph": {
+        "n": 1,
+        "p50": 23.585,
+        "p95": 23.585,
+        "max": 23.585
+      },
+      "inventory": {
+        "n": 1,
+        "p50": 0.1,
+        "p95": 0.1,
+        "max": 0.1
+      },
+      "reachability": {
+        "n": 1,
+        "p50": 1.756,
+        "p95": 1.756,
+        "max": 1.756
+      }
+    }
+  }
+}

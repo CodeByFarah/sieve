@@ -1,0 +1,154 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend (lint, types, tests)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: sieve
+          POSTGRES_PASSWORD: sieve
+          POSTGRES_DB: sieve
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U sieve" --health-interval 2s --health-timeout 3s --health-retries 30
+    env:
+      SIEVE_TEST_DATABASE_URL: postgresql+psycopg://sieve:sieve@127.0.0.1:5432/sieve_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - run: uv sync --frozen
+      - name: Lint
+        run: |
+          uv run ruff check src tests benchmarks
+          uv run ruff format --check src tests benchmarks
+      - name: Type check
+        run: uv run python -m mypy src tests benchmarks
+      - name: Unit tests
+        run: uv run python -m pytest -m "not integration"
+      - name: Integration tests (PostgreSQL, real migrations)
+        run: uv run python -m pytest -m integration
+      - name: OpenAPI document matches the frontend's copy
+        run: |
+          uv run python -c "import json; from sieve.api.app import create_app; print(json.dumps(create_app().openapi(), indent=2))" > /tmp/openapi.json
+          uv run python -c "import json,sys; sys.exit(json.load(open('/tmp/openapi.json')) != json.load(open('../web/openapi.json')))" \
+            || { echo '::error::web/openapi.json is stale; regenerate it and run npm run api:types'; exit 1; }
+
+  ai-eval:
+    name: AI extraction regression gate (heuristic baseline)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - run: uv sync --frozen
+      - name: Run the golden dataset and compare with the committed baseline
+        # Live-model evaluation needs an API key and is run manually; CI gates the deterministic pipeline.
+        run: >-
+          uv run python -m sieve.ai.evaluation --provider heuristic --out /tmp/ai-eval
+          --baseline tests/ai/golden/baseline-heuristic.json
+
+  frontend:
+    name: Frontend (types, lint, build)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - name: Generated API types are current
+        run: |
+          npm run api:types
+          git diff --exit-code -- src/lib/api-types.ts
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run build
+
+  security:
+    name: Security (secrets, dependencies)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Secret scanning
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: astral-sh/setup-uv@v6
+      - name: Dependency vulnerabilities (pip-audit)
+        working-directory: backend
+        run: |
+          uv export --frozen --no-dev --no-emit-project --format requirements-txt > /tmp/requirements.txt
+          uvx pip-audit --strict --requirement /tmp/requirements.txt
+      - name: Dependency vulnerabilities (npm audit, production dependencies)
+        working-directory: web
+        run: npm audit --omit=dev --audit-level=high
+
+  infrastructure:
+    name: Infrastructure (Terraform, IaC scan)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: infrastructure/terraform
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+      - run: terraform fmt -check -recursive
+      - run: terraform init -backend=false -input=false
+      - run: terraform validate
+      - name: Misconfiguration scan (Trivy)
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: config
+          scan-ref: infrastructure
+          severity: CRITICAL,HIGH
+          exit-code: "1"
+
+  image:
+    name: Container image
+    runs-on: ubuntu-latest
+    needs: [backend, frontend]
+    strategy:
+      matrix:
+        image: [backend, web]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: docker build -f infrastructure/docker/${{ matrix.image }}.Dockerfile -t sieve-${{ matrix.image }}:ci .
+      - name: Scan image (Trivy)
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: sieve-${{ matrix.image }}:ci
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          exit-code: "1"

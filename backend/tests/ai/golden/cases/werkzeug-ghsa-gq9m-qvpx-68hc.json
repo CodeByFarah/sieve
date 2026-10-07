@@ -1,0 +1,30 @@
+{
+  "id": "werkzeug-ghsa-gq9m-qvpx-68hc",
+  "advisory": {
+    "id": "GHSA-gq9m-qvpx-68hc",
+    "summary": "Pallets Werkzeug Insufficient Entropy",
+    "details": "Pallets Werkzeug before 0.15.3, when used with Docker, has insufficient debugger PIN randomness because Docker containers share the same machine id.",
+    "references": [
+      "https://nvd.nist.gov/vuln/detail/CVE-2019-14806",
+      "https://github.com/pallets/werkzeug/commit/00bc43b1672e662e5e3b8cecd79e67fc968fa246",
+      "https://github.com/pallets/werkzeug",
+      "https://github.com/pallets/werkzeug/blob/7fef41b120327d3912fbe12fb64f1951496fcf3e/src/werkzeug/debug/__init__.py#L168",
+      "https://github.com/pypa/advisory-database/tree/main/vulns/werkzeug/PYSEC-2019-140.yaml",
+      "https://palletsprojects.com/blog/werkzeug-0-15-3-released"
+    ]
+  },
+  "package": {
+    "name": "werkzeug",
+    "vulnerable_version": "0.14.1"
+  },
+  "fix_diff": "diff --git a/CHANGES.rst b/CHANGES.rst\nindex 87033da6a..70dbab9da 100644\n--- a/CHANGES.rst\n+++ b/CHANGES.rst\n@@ -20,6 +20,8 @@ Unreleased\n     (:issue:`1510`)\n -   The debugger detects cycles in chained exceptions and does not time\n     out in that case. (:issue:`1536`)\n+-   When running the development server in Docker, the debugger security\n+    pin is now unique per container.\n \n \n Version 0.15.2\ndiff --git a/src/werkzeug/debug/__init__.py b/src/werkzeug/debug/__init__.py\nindex c5e4d2d5b..9195c79aa 100644\n--- a/src/werkzeug/debug/__init__.py\n+++ b/src/werkzeug/debug/__init__.py\n@@ -67,6 +67,19 @@ def get_machine_id():\n         return rv\n \n     def _generate():\n+        # docker containers share the same machine id, get the\n+        # container id instead\n+        try:\n+            with open(\"/proc/self/cgroup\") as f:\n+                value = f.readline()\n+        except IOError:\n+            pass\n+        else:\n+            value = value.strip().partition(\"/docker/\")[2]\n+\n+            if value:\n+                return value\n+\n         # Potential sources of secret information on linux.  The machine-id\n         # is stable across boots, the boot id is not\n         for filename in \"/etc/machine-id\", \"/proc/sys/kernel/random/boot_id\":\n",
+  "expected": [
+    "werkzeug.debug.get_pin_and_cookie_name"
+  ],
+  "acceptable": [],
+  "unacceptable": [],
+  "label_source": "curated (sieve/symbols/curated.json): The debugger PIN was derived from guessable values inside containers.",
+  "tags": [
+    "has_fix_diff"
+  ]
+}

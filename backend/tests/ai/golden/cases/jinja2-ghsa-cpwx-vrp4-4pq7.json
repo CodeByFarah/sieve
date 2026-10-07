@@ -1,0 +1,32 @@
+{
+  "id": "jinja2-ghsa-cpwx-vrp4-4pq7",
+  "advisory": {
+    "id": "GHSA-cpwx-vrp4-4pq7",
+    "summary": "Jinja2 vulnerable to sandbox breakout through attr filter selecting format method",
+    "details": "An oversight in how the Jinja sandboxed environment interacts with the `|attr` filter allows an attacker that controls the content of a template to execute arbitrary Python code.\n\nTo exploit the vulnerability, an attacker needs to control the content of a template. Whether that is the case depends on the type of application using Jinja. This vulnerability impacts users of applications which execute untrusted templates.\n\nJinja's sandbox does catch calls to `str.format` and ensures they don't escape the sandbox. However, it's possible to use the `|attr` filter to get a reference to a string's plain format method, bypassing the sandbox. After the fix, the `|attr` filter no longer bypasses the environment's attribute lookup.",
+    "references": [
+      "https://github.com/pallets/jinja/security/advisories/GHSA-cpwx-vrp4-4pq7",
+      "https://nvd.nist.gov/vuln/detail/CVE-2025-27516",
+      "https://github.com/pallets/jinja/commit/90457bbf33b8662926ae65cdde4c4c32e756e403",
+      "https://github.com/pallets/jinja",
+      "https://lists.debian.org/debian-lts-announce/2025/04/msg00022.html",
+      "https://lists.debian.org/debian-lts-announce/2025/04/msg00045.html"
+    ]
+  },
+  "package": {
+    "name": "jinja2",
+    "vulnerable_version": "2.10"
+  },
+  "fix_diff": "diff --git a/CHANGES.rst b/CHANGES.rst\nindex f1956ec12..605a04fd9 100644\n--- a/CHANGES.rst\n+++ b/CHANGES.rst\n@@ -5,6 +5,10 @@ Version 3.1.6\n \n Unreleased\n \n+-   The ``|attr`` filter does not bypass the environment's attribute lookup,\n+    allowing the sandbox to apply its checks. :ghsa:`cpwx-vrp4-4pq7`\n+\n+\n Version 3.1.5\n -------------\n \ndiff --git a/src/jinja2/filters.py b/src/jinja2/filters.py\nindex e5b5a00c5..2bcba4fbd 100644\n--- a/src/jinja2/filters.py\n+++ b/src/jinja2/filters.py\n@@ -6,6 +6,7 @@\n import typing\n import typing as t\n from collections import abc\n+from inspect import getattr_static\n from itertools import chain\n from itertools import groupby\n \n@@ -1411,31 +1412,25 @@ def do_reverse(value: t.Union[str, t.Iterable[V]]) -> t.Union[str, t.Iterable[V]\n def do_attr(\n     environment: \"Environment\", obj: t.Any, name: str\n ) -> t.Union[Undefined, t.Any]:\n-    \"\"\"Get an attribute of an object.  ``foo|attr(\"bar\")`` works like\n-    ``foo.bar`` just that always an attribute is returned and items are not\n-    looked up.\n+    \"\"\"Get an attribute of an object. ``foo|attr(\"bar\")`` works like\n+    ``foo.bar``, but returns undefined instead of falling back to ``foo[\"bar\"]``\n+    if the attribute doesn't exist.\n \n     See :ref:`Notes on subscriptions <notes-on-subscriptions>` for more details.\n     \"\"\"\n+    # Environment.getattr will fall back to obj[name] if obj.name doesn't exist.\n+    # But we want to call env.getattr to get behavior such as sandboxing.\n+    # Determine if the attr exists first, so we know the fallback won't trigger.\n     try:\n-        name = str(name)\n-    except UnicodeError:\n-        pass\n-    else:\n-        try:\n-            value = getattr(obj, name)\n-        except AttributeError:\n-            pass\n-        else:\n-            if environment.sandboxed:\n-                environment = t.cast(\"SandboxedEnvironment\", environment)\n-\n-                if not environment.is_safe_attribute(obj, name, value):\n-                    return environment.unsafe_undefined(obj, name)\n-\n-            return value\n-\n-    return environment.undefined(obj=obj, name=name)\n+        # This avoids executing properties/descriptors, but misses __getattr__\n+        # and __getattribute__ dynamic attrs.\n+        getattr_static(obj, name)\n+    except AttributeError:\n+        # This finds dynamic attrs, and we know it's not a descriptor at this point.\n+        if not hasattr(obj, name):\n+            return environment.undefined(obj=obj, name=name)\n+\n+    return environment.getattr(obj, name)\n \n \n @typing.overload\ndiff --git a/tests/test_security.py b/tests/test_security.py\nindex 864d5f7f9..3a1378192 100644\n--- a/tests/test_security.py\n+++ b/tests/test_security.py\n@@ -190,3 +190,13 @@ def run(value, arg):\n \n         with pytest.raises(SecurityError):\n             t.render()\n+\n+    def test_attr_filter(self) -> None:\n+        env = SandboxedEnvironment()\n+        t = env.from_string(\n+            \"\"\"{{ \"{0.__call__.__builtins__[__import__]}\"\n+                  | attr(\"format\")(not_here) }}\"\"\"\n+        )\n+\n+        with pytest.raises(SecurityError):\n+            t.render()\n",
+  "expected": [
+    "jinja2.sandbox.SandboxedEnvironment"
+  ],
+  "acceptable": [],
+  "unacceptable": [
+    "jinja2.utils.escape"
+  ],
+  "label_source": "curated (sieve/symbols/curated.json): The |attr filter could select str.format and escape the sandbox. Only relevant to SandboxedEnvironment.",
+  "tags": [
+    "has_fix_diff"
+  ]
+}

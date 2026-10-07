@@ -1,0 +1,120 @@
+# Release: build and push images, run migrations, then roll out api, worker and web.
+# Requires the infrastructure in infrastructure/terraform to exist and these repository variables:
+#   AWS_REGION, AWS_DEPLOY_ROLE_ARN (output ci_deploy_role_arn), ECS_CLUSTER,
+#   ECR_BACKEND, ECR_WEB (output ecr_repositories), MIGRATE_SUBNETS (comma-separated),
+#   MIGRATE_SECURITY_GROUP (output task_network).
+# The "production" GitHub Environment holds the manual approval; the AWS role trusts only it.
+name: Deploy
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      TAG: ${{ github.sha }}
+      CLUSTER: ${{ vars.ECS_CLUSTER }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push images
+        run: |
+          docker build -f infrastructure/docker/backend.Dockerfile -t "${{ vars.ECR_BACKEND }}:$TAG" .
+          docker build -f infrastructure/docker/web.Dockerfile --build-arg SIEVE_API_URL=http://api:8000 \
+            -t "${{ vars.ECR_WEB }}:$TAG" .
+          docker push "${{ vars.ECR_BACKEND }}:$TAG"
+          docker push "${{ vars.ECR_WEB }}:$TAG"
+
+      - name: Fetch current task definitions
+        run: |
+          for family in migrate api worker web; do
+            aws ecs describe-task-definition --task-definition "sieve-$family" \
+              --query taskDefinition > "$family.json"
+          done
+
+      # --- migrations first: they must be compatible with the version still running ----------
+      - id: migrate
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: migrate.json
+          container-name: migrate
+          image: ${{ vars.ECR_BACKEND }}:${{ github.sha }}
+
+      - id: migrate-register
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.migrate.outputs.task-definition }}
+
+      - name: Run migrations
+        run: |
+          task=$(aws ecs run-task --cluster "$CLUSTER" --launch-type FARGATE \
+            --task-definition "${{ steps.migrate-register.outputs.task-definition-arn }}" \
+            --network-configuration "awsvpcConfiguration={subnets=[${{ vars.MIGRATE_SUBNETS }}],securityGroups=[${{ vars.MIGRATE_SECURITY_GROUP }}],assignPublicIp=ENABLED}" \
+            --query 'tasks[0].taskArn' --output text)
+          aws ecs wait tasks-stopped --cluster "$CLUSTER" --tasks "$task"
+          code=$(aws ecs describe-tasks --cluster "$CLUSTER" --tasks "$task" \
+            --query 'tasks[0].containers[0].exitCode' --output text)
+          echo "migration exit code: $code"
+          test "$code" = "0"
+
+      # --- services ----------------------------------------------------------------------------
+      - id: api
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: api.json
+          container-name: api
+          image: ${{ vars.ECR_BACKEND }}:${{ github.sha }}
+
+      - uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.api.outputs.task-definition }}
+          cluster: ${{ vars.ECS_CLUSTER }}
+          service: api
+          wait-for-service-stability: true
+
+      - id: worker
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: worker.json
+          container-name: worker
+          image: ${{ vars.ECR_BACKEND }}:${{ github.sha }}
+
+      - uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.worker.outputs.task-definition }}
+          cluster: ${{ vars.ECS_CLUSTER }}
+          service: worker
+          wait-for-service-stability: true
+
+      - id: web
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: web.json
+          container-name: web
+          image: ${{ vars.ECR_WEB }}:${{ github.sha }}
+
+      - uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.web.outputs.task-definition }}
+          cluster: ${{ vars.ECS_CLUSTER }}
+          service: web
+          wait-for-service-stability: true

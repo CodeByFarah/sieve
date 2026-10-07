@@ -1,0 +1,35 @@
+{
+  "id": "jinja2-ghsa-h75v-3vvj-5mfj",
+  "advisory": {
+    "id": "GHSA-h75v-3vvj-5mfj",
+    "summary": "Jinja vulnerable to HTML attribute injection when passing user input as keys to xmlattr filter",
+    "details": "The `xmlattr` filter in affected versions of Jinja accepts keys containing non-attribute characters. XML/HTML attributes cannot contain spaces, `/`, `>`, or `=`, as each would then be interpreted as starting a separate attribute. If an application accepts keys (as opposed to only values) as user input, and renders these in pages that other users see as well, an attacker could use this to inject other attributes and perform XSS. The fix for the previous GHSA-h5c8-rqwp-cp95 CVE-2024-22195 only addressed spaces but not other characters.\n\nAccepting keys as user input is now explicitly considered an unintended use case of the `xmlattr` filter, and code that does so without otherwise validating the input should be flagged as insecure, regardless of Jinja version. Accepting _values_ as user input continues to be safe.",
+    "references": [
+      "https://github.com/pallets/jinja/security/advisories/GHSA-h75v-3vvj-5mfj",
+      "https://nvd.nist.gov/vuln/detail/CVE-2024-34064",
+      "https://github.com/pallets/jinja/commit/0668239dc6b44ef38e7a6c9f91f312fd4ca581cb",
+      "https://github.com/pallets/jinja",
+      "https://lists.debian.org/debian-lts-announce/2024/12/msg00009.html",
+      "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/567XIGSZMABG6TSMYWD7MIYNJSUQQRUC",
+      "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/GCLF44KY43BSVMTE6S53B4V5WP3FRRSE",
+      "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/SSCBHIL6BYKR5NRCBXP4XMP2CEEKGFVS",
+      "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ZALNWE3TXPPHVPSI3AZ5CTMSTAVN5UMS"
+    ]
+  },
+  "package": {
+    "name": "jinja2",
+    "vulnerable_version": "2.10"
+  },
+  "fix_diff": "diff --git a/CHANGES.rst b/CHANGES.rst\nindex bf670420c..ba3b2244e 100644\n--- a/CHANGES.rst\n+++ b/CHANGES.rst\n@@ -5,6 +5,12 @@ Version 3.1.4\n \n Unreleased\n \n+-   The ``xmlattr`` filter does not allow keys with ``/`` solidus, ``>``\n+    greater-than sign, or ``=`` equals sign, in addition to disallowing spaces.\n+    Regardless of any validation done by Jinja, user input should never be used\n+    as keys to this filter, or must be separately validated first.\n+    GHSA-h75v-3vvj-5mfj\n+\n \n Version 3.1.3\n -------------\ndiff --git a/src/jinja2/filters.py b/src/jinja2/filters.py\nindex 4cf3c11fb..acd11976e 100644\n--- a/src/jinja2/filters.py\n+++ b/src/jinja2/filters.py\n@@ -250,7 +250,9 @@ def do_items(value: t.Union[t.Mapping[K, V], Undefined]) -> t.Iterator[t.Tuple[K\n     yield from value.items()\n \n \n-_space_re = re.compile(r\"\\s\", flags=re.ASCII)\n+# Check for characters that would move the parser state from key to value.\n+# https://html.spec.whatwg.org/#attribute-name-state\n+_attr_key_re = re.compile(r\"[\\s/>=]\", flags=re.ASCII)\n \n \n @pass_eval_context\n@@ -259,8 +261,14 @@ def do_xmlattr(\n ) -> str:\n     \"\"\"Create an SGML/XML attribute string based on the items in a dict.\n \n-    If any key contains a space, this fails with a ``ValueError``. Values that\n-    are neither ``none`` nor ``undefined`` are automatically escaped.\n+    **Values** that are neither ``none`` nor ``undefined`` are automatically\n+    escaped, safely allowing untrusted user input.\n+\n+    User input should not be used as **keys** to this filter. If any key\n+    contains a space, ``/`` solidus, ``>`` greater-than sign, or ``=`` equals\n+    sign, this fails with a ``ValueError``. Regardless of this, user input\n+    should never be used as keys to this filter, or must be separately validated\n+    first.\n \n     .. sourcecode:: html+jinja\n \n@@ -280,6 +288,10 @@ def do_xmlattr(\n     As you can see it automatically prepends a space in front of the item\n     if the filter returned something unless the second parameter is false.\n \n+    .. versionchanged:: 3.1.4\n+        Keys with ``/`` solidus, ``>`` greater-than sign, or ``=`` equals sign\n+        are not allowed.\n+\n     .. versionchanged:: 3.1.3\n         Keys with spaces are not allowed.\n     \"\"\"\n@@ -289,8 +301,8 @@ def do_xmlattr(\n         if value is None or isinstance(value, Undefined):\n             continue\n \n-        if _space_re.search(key) is not None:\n-            raise ValueError(f\"Spaces are not allowed in attributes: '{key}'\")\n+        if _attr_key_re.search(key) is not None:\n+            raise ValueError(f\"Invalid character in attribute name: {key!r}\")\n \n         items.append(f'{escape(key)}=\"{escape(value)}\"')\n \ndiff --git a/tests/test_filters.py b/tests/test_filters.py\nindex f50ed13ab..d8e9114d0 100644\n--- a/tests/test_filters.py\n+++ b/tests/test_filters.py\n@@ -474,11 +474,12 @@ def test_xmlattr(self, env):\n         assert 'bar=\"23\"' in out\n         assert 'blub:blub=\"&lt;?&gt;\"' in out\n \n-    def test_xmlattr_key_with_spaces(self, env):\n-        with pytest.raises(ValueError, match=\"Spaces are not allowed\"):\n-            env.from_string(\n-                \"{{ {'src=1 onerror=alert(1)': 'my_class'}|xmlattr }}\"\n-            ).render()\n+    @pytest.mark.parametrize(\"sep\", (\"\\t\", \"\\n\", \"\\f\", \" \", \"/\", \">\", \"=\"))\n+    def test_xmlattr_key_invalid(self, env: Environment, sep: str) -> None:\n+        with pytest.raises(ValueError, match=\"Invalid character\"):\n+            env.from_string(\"{{ {key: 'my_class'}|xmlattr }}\").render(\n+                key=f\"class{sep}onclick=alert(1)\"\n+            )\n \n     def test_sort1(self, env):\n         tmpl = env.from_string(\"{{ [2, 3, 1]|sort }}|{{ [2, 3, 1]|sort(true) }}\")\n",
+  "expected": [
+    "jinja2.filters.do_xmlattr"
+  ],
+  "acceptable": [],
+  "unacceptable": [
+    "jinja2.utils.escape"
+  ],
+  "label_source": "curated (sieve/symbols/curated.json): The |xmlattr filter accepted keys containing /, >, or =, allowing attribute injection.",
+  "tags": [
+    "has_fix_diff"
+  ]
+}

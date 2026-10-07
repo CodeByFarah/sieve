@@ -1,0 +1,32 @@
+{
+  "reviewer": "sieve-maintainers",
+  "note": "Review decisions on the public demo were made by the Sieve maintainers after reading the evidence each finding shows. They demonstrate the review workflow; they are not generated.",
+  "decisions": [
+    {
+      "advisory": "GHSA-8q59-q68h-6hv4",
+      "decided_verdict": "reachable",
+      "vex_status": "affected",
+      "comment": "Confirmed. PUT /configs/<name> passes the request body to yaml.load(..., Loader=FullLoader). Upgrade PyYAML to 5.4+ and switch to yaml.safe_load."
+    },
+    {
+      "advisory": "GHSA-6757-jp84-gxfx",
+      "decided_verdict": "reachable",
+      "vex_status": "affected",
+      "comment": "Same call site as CVE-2020-14343: untrusted upload bodies reach FullLoader."
+    },
+    {
+      "advisory": "GHSA-2g68-c3qc-8985",
+      "decided_verdict": "not_reached",
+      "vex_status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "comment": "Override. The path goes through app.run() under `if __name__ == \"__main__\"`, which only starts the local development server. Production runs the app under a WSGI server with the debugger disabled."
+    },
+    {
+      "advisory": "GHSA-8vj2-vxx3-667w",
+      "decided_verdict": "not_reached",
+      "vex_status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "comment": "Accepted. Pillow is still pinned in requirements.txt but nothing imports it. Removing the pin is tracked separately."
+    }
+  ]
+}

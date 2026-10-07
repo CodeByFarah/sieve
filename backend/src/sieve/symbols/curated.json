@@ -1,0 +1,161 @@
+{
+  "provenance": "Hand-curated by the Sieve maintainers from each advisory's description and the upstream fix. Every symbol is verified to exist in the installed package source before it is used; a symbol that does not exist is reported as not found, never assumed. These labels are also the ground truth of the AI-extraction golden dataset.",
+  "entries": [
+    {
+      "ids": ["GHSA-8q59-q68h-6hv4", "PYSEC-2021-142", "CVE-2020-14343"],
+      "package": "pyyaml",
+      "symbols": ["yaml.load", "yaml.full_load", "yaml.load_all", "yaml.full_load_all", "yaml.FullLoader"],
+      "rationale": "FullLoader (the default of yaml.load in 5.x) can construct arbitrary Python objects; the fix in 5.4 restricted FullConstructor."
+    },
+    {
+      "ids": ["GHSA-6757-jp84-gxfx", "PYSEC-2020-96", "CVE-2020-1747"],
+      "package": "pyyaml",
+      "symbols": ["yaml.load", "yaml.full_load", "yaml.load_all", "yaml.full_load_all", "yaml.FullLoader"],
+      "rationale": "python/object/new tag handled by FullLoader allows code execution when loading untrusted YAML with full_load or FullLoader."
+    },
+    {
+      "ids": ["GHSA-ffqj-6fqr-9h24", "CVE-2022-29217"],
+      "package": "pyjwt",
+      "symbols": ["jwt.algorithms.HMACAlgorithm.prepare_key"],
+      "rationale": "HMACAlgorithm.prepare_key did not reject all public-key formats, allowing algorithm confusion when the caller lets the token choose the algorithm."
+    },
+    {
+      "ids": ["GHSA-x84v-xcm2-53pg", "PYSEC-2018-28", "CVE-2018-18074"],
+      "package": "requests",
+      "symbols": ["requests.sessions.SessionRedirectMixin.rebuild_auth"],
+      "rationale": "rebuild_auth kept the Authorization header on an https-to-http redirect to the same host."
+    },
+    {
+      "ids": ["GHSA-j8r2-6x86-q33q", "CVE-2023-32681"],
+      "package": "requests",
+      "symbols": ["requests.sessions.SessionRedirectMixin.rebuild_proxies"],
+      "rationale": "rebuild_proxies re-attached Proxy-Authorization to requests redirected to HTTPS destinations."
+    },
+    {
+      "ids": ["GHSA-9wx4-h78v-vm56", "CVE-2024-35195"],
+      "package": "requests",
+      "symbols": ["requests.adapters.HTTPAdapter.get_connection"],
+      "rationale": "Connections pooled after a verify=False request were reused for later verified requests; the fix replaced get_connection."
+    },
+    {
+      "ids": ["GHSA-9hjg-9r4m-mvj7", "CVE-2024-47081"],
+      "package": "requests",
+      "symbols": ["requests.utils.get_netrc_auth"],
+      "rationale": "get_netrc_auth parsed the URL host incorrectly, so a crafted URL could receive credentials meant for another host."
+    },
+    {
+      "ids": ["GHSA-gwvm-45gx-3cf8", "CVE-2018-25091"],
+      "package": "urllib3",
+      "symbols": ["urllib3.poolmanager.PoolManager.urlopen"],
+      "rationale": "PoolManager.urlopen forwarded the Authorization header on cross-host redirects."
+    },
+    {
+      "ids": ["GHSA-v845-jxx5-vc9f", "CVE-2023-43804"],
+      "package": "urllib3",
+      "symbols": ["urllib3.poolmanager.PoolManager.urlopen"],
+      "rationale": "PoolManager.urlopen did not strip the Cookie header on cross-origin redirects."
+    },
+    {
+      "ids": ["GHSA-34jh-p97f-mpxf", "CVE-2024-37891"],
+      "package": "urllib3",
+      "symbols": ["urllib3.poolmanager.PoolManager.urlopen"],
+      "rationale": "Proxy-Authorization was not stripped by PoolManager.urlopen on cross-origin redirects."
+    },
+    {
+      "ids": ["GHSA-mh33-7rrq-662w", "CVE-2019-11324"],
+      "package": "urllib3",
+      "symbols": ["urllib3.util.ssl_.ssl_wrap_socket"],
+      "rationale": "ssl_wrap_socket loaded the system's default CA certificates even when explicit ca_certs were given."
+    },
+    {
+      "ids": ["GHSA-g3rq-g295-4j3m", "CVE-2020-28493"],
+      "package": "jinja2",
+      "symbols": ["jinja2.utils.urlize"],
+      "rationale": "The regular expression in urlize (the |urlize filter) has catastrophic backtracking."
+    },
+    {
+      "ids": ["GHSA-h5c8-rqwp-cp95", "CVE-2024-22195"],
+      "package": "jinja2",
+      "symbols": ["jinja2.filters.do_xmlattr"],
+      "rationale": "The |xmlattr filter accepted keys containing spaces, allowing attribute injection."
+    },
+    {
+      "ids": ["GHSA-h75v-3vvj-5mfj", "CVE-2024-34064"],
+      "package": "jinja2",
+      "symbols": ["jinja2.filters.do_xmlattr"],
+      "rationale": "The |xmlattr filter accepted keys containing /, >, or =, allowing attribute injection."
+    },
+    {
+      "ids": ["GHSA-462w-v97r-4m45", "CVE-2019-10906"],
+      "package": "jinja2",
+      "symbols": ["jinja2.sandbox.SandboxedEnvironment"],
+      "rationale": "str.format in the sandbox could reach unsafe attributes. Only relevant when SandboxedEnvironment renders untrusted templates."
+    },
+    {
+      "ids": ["GHSA-q2x7-8rv6-6q7h", "CVE-2024-56326"],
+      "package": "jinja2",
+      "symbols": ["jinja2.sandbox.SandboxedEnvironment"],
+      "rationale": "Indirect references to str.format escaped the sandbox. Only relevant to SandboxedEnvironment."
+    },
+    {
+      "ids": ["GHSA-cpwx-vrp4-4pq7", "CVE-2025-27516"],
+      "package": "jinja2",
+      "symbols": ["jinja2.sandbox.SandboxedEnvironment"],
+      "rationale": "The |attr filter could select str.format and escape the sandbox. Only relevant to SandboxedEnvironment."
+    },
+    {
+      "ids": ["GHSA-562c-5r94-xh97", "CVE-2018-1000656"],
+      "package": "flask",
+      "symbols": ["flask.json.loads"],
+      "rationale": "JSON request bodies with an unexpected encoding raised errors that led to denial of service; fixed by encoding detection in flask.json.loads."
+    },
+    {
+      "ids": ["GHSA-m2qf-hxjv-5gpq", "CVE-2023-30861"],
+      "package": "flask",
+      "symbols": ["flask.sessions.SecureCookieSessionInterface.save_session"],
+      "rationale": "save_session did not set Vary: Cookie when the session was refreshed, so caching proxies could share another user's cookie."
+    },
+    {
+      "ids": ["GHSA-2g68-c3qc-8985", "CVE-2024-34069"],
+      "package": "werkzeug",
+      "symbols": ["werkzeug.debug.DebuggedApplication"],
+      "rationale": "The interactive debugger could be driven from an attacker-controlled domain. Only relevant when the debugger is enabled."
+    },
+    {
+      "ids": ["GHSA-gq9m-qvpx-68hc", "CVE-2019-14806"],
+      "package": "werkzeug",
+      "symbols": ["werkzeug.debug.get_pin_and_cookie_name"],
+      "rationale": "The debugger PIN was derived from guessable values inside containers."
+    },
+    {
+      "ids": ["GHSA-j544-7q9p-6xp8", "CVE-2019-14322"],
+      "package": "werkzeug",
+      "symbols": ["werkzeug.security.safe_join"],
+      "rationale": "safe_join did not reject Windows drive-relative paths, enabling traversal on Windows."
+    },
+    {
+      "ids": ["GHSA-px8h-6qxv-m22q", "CVE-2023-23934"],
+      "package": "werkzeug",
+      "symbols": ["werkzeug.http.parse_cookie"],
+      "rationale": "Nameless cookies were parsed as if they had a name, bypassing __Host- prefix protection."
+    },
+    {
+      "ids": ["GHSA-jjg7-2v4v-x38h", "CVE-2024-3651"],
+      "package": "idna",
+      "symbols": ["idna.core.encode"],
+      "rationale": "Specially crafted long inputs to idna.encode took quadratic time."
+    },
+    {
+      "ids": ["GHSA-43fp-rhv2-5gv8", "CVE-2022-23491"],
+      "package": "certifi",
+      "symbols": ["certifi.core.where"],
+      "rationale": "The bundled CA store trusted TrustCor roots. Any use of the bundle (certifi.where) is affected."
+    },
+    {
+      "ids": ["GHSA-xqr8-7jwr-rhp7", "CVE-2023-37920"],
+      "package": "certifi",
+      "symbols": ["certifi.core.where"],
+      "rationale": "The bundled CA store trusted e-Tugra roots. Any use of the bundle (certifi.where) is affected."
+    }
+  ]
+}

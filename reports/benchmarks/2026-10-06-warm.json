@@ -1,0 +1,223 @@
+{
+  "label": "2026-10-06-warm",
+  "date": "2026-10-06T15:51:47+00:00",
+  "machine": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 186 Stepping 2, GenuineIntel",
+    "cpu_count": 12,
+    "python": "3.13.16"
+  },
+  "command": "python benchmarks/bench.py --api http://127.0.0.1:8010 --sequential 5 --concurrent 4 --api-requests 50 --label 2026-10-06-warm --out ../reports/benchmarks",
+  "sequential": {
+    "scans": 5,
+    "failed": [],
+    "findings": [
+      100
+    ],
+    "queue_wait_seconds": {
+      "n": 5,
+      "p50": 0.745,
+      "p95": 1.019,
+      "max": 1.019
+    },
+    "run_seconds": {
+      "n": 5,
+      "p50": 9.353,
+      "p95": 12.865,
+      "max": 12.865
+    },
+    "end_to_end_seconds": {
+      "n": 5,
+      "p50": 10.318,
+      "p95": 13.45,
+      "max": 13.45
+    },
+    "stages_seconds": {
+      "sbom": {
+        "n": 5,
+        "p50": 0.031,
+        "p95": 0.046,
+        "max": 0.046
+      },
+      "fetch": {
+        "n": 5,
+        "p50": 0.023,
+        "p95": 0.038,
+        "max": 0.038
+      },
+      "match": {
+        "n": 5,
+        "p50": 0.678,
+        "p95": 0.862,
+        "max": 0.862
+      },
+      "score": {
+        "n": 5,
+        "p50": 0.793,
+        "p95": 1.163,
+        "max": 1.163
+      },
+      "report": {
+        "n": 5,
+        "p50": 0.011,
+        "p95": 0.022,
+        "max": 0.022
+      },
+      "symbols": {
+        "n": 5,
+        "p50": 0.69,
+        "p95": 0.934,
+        "max": 0.934
+      },
+      "callgraph": {
+        "n": 5,
+        "p50": 5.192,
+        "p95": 8.299,
+        "max": 8.299
+      },
+      "inventory": {
+        "n": 5,
+        "p50": 0.089,
+        "p95": 0.159,
+        "max": 0.159
+      },
+      "reachability": {
+        "n": 5,
+        "p50": 1.86,
+        "p95": 2.021,
+        "max": 2.021
+      }
+    }
+  },
+  "concurrent": {
+    "scans": 4,
+    "failed": [],
+    "findings": [
+      100
+    ],
+    "queue_wait_seconds": {
+      "n": 4,
+      "p50": 17.169,
+      "p95": 32.253,
+      "max": 32.253
+    },
+    "run_seconds": {
+      "n": 4,
+      "p50": 9.709,
+      "p95": 12.404,
+      "max": 12.404
+    },
+    "end_to_end_seconds": {
+      "n": 4,
+      "p50": 27.778,
+      "p95": 41.413,
+      "max": 41.413
+    },
+    "stages_seconds": {
+      "sbom": {
+        "n": 4,
+        "p50": 0.05,
+        "p95": 0.087,
+        "max": 0.087
+      },
+      "fetch": {
+        "n": 4,
+        "p50": 0.02,
+        "p95": 0.031,
+        "max": 0.031
+      },
+      "match": {
+        "n": 4,
+        "p50": 0.685,
+        "p95": 0.693,
+        "max": 0.693
+      },
+      "score": {
+        "n": 4,
+        "p50": 0.9,
+        "p95": 1.053,
+        "max": 1.053
+      },
+      "report": {
+        "n": 4,
+        "p50": 0.013,
+        "p95": 0.016,
+        "max": 0.016
+      },
+      "symbols": {
+        "n": 4,
+        "p50": 0.79,
+        "p95": 0.943,
+        "max": 0.943
+      },
+      "callgraph": {
+        "n": 4,
+        "p50": 5.444,
+        "p95": 7.733,
+        "max": 7.733
+      },
+      "inventory": {
+        "n": 4,
+        "p50": 0.078,
+        "p95": 0.116,
+        "max": 0.116
+      },
+      "reachability": {
+        "n": 4,
+        "p50": 1.675,
+        "p95": 1.842,
+        "max": 1.842
+      }
+    }
+  },
+  "api": {
+    "/healthz": {
+      "n": 50,
+      "p50": 1.351,
+      "p95": 2.172,
+      "max": 2.502
+    },
+    "/api/v1/demo": {
+      "n": 50,
+      "p50": 10.506,
+      "p95": 21.671,
+      "max": 38.35
+    },
+    "/api/v1/orgs/{org}/overview": {
+      "n": 50,
+      "p50": 78.701,
+      "p95": 107.683,
+      "max": 132.871
+    },
+    "/api/v1/orgs/{org}/findings?limit=50": {
+      "n": 50,
+      "p50": 51.076,
+      "p95": 72.5,
+      "max": 97.969
+    },
+    "/api/v1/orgs/{org}/findings?verdict=reachable&limit=50": {
+      "n": 50,
+      "p50": 28.151,
+      "p95": 56.089,
+      "max": 58.198
+    },
+    "/api/v1/findings/{finding}": {
+      "n": 50,
+      "p50": 43.277,
+      "p95": 86.564,
+      "max": 115.215
+    },
+    "/api/v1/orgs/{org}/repositories": {
+      "n": 50,
+      "p50": 45.093,
+      "p95": 64.781,
+      "max": 77.794
+    },
+    "/api/v1/orgs/{org}/activity": {
+      "n": 50,
+      "p50": 36.544,
+      "p95": 63.247,
+      "max": 84.655
+    }
+  }
+}

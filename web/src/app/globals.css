@@ -1,0 +1,84 @@
+@import "tailwindcss";
+
+/* Sieve tokens. Dark is the primary theme; light is designed, not inverted. Color carries
+   meaning: only verdicts are coloured. */
+:root {
+  --bg: #f5f7f8;
+  --surface: #ffffff;
+  --raised: #eef2f4;
+  --line: #d6dee4;
+  --text: #13222c;
+  --muted: #5b7080;
+  --reach: #c8432f;
+  --review: #a87a12;
+  --clear: #2e8576;
+  --focus: #2f6fb3;
+}
+
+:root[data-theme="dark"] {
+  --bg: #0e1a22;
+  --surface: #14232d;
+  --raised: #1a2c38;
+  --line: #22374a;
+  --text: #e7eef2;
+  --muted: #8ba2b3;
+  --reach: #f2604c;
+  --review: #e0b04a;
+  --clear: #4aae9f;
+  --focus: #7fb4e8;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-raised: var(--raised);
+  --color-line: var(--line);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-reach: var(--reach);
+  --color-review: var(--review);
+  --color-clear: var(--clear);
+  --color-focus: var(--focus);
+  --font-sans: var(--font-schibsted), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+}
+
+html {
+  background: var(--bg);
+  color: var(--text);
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+body {
+  font-family: var(--font-sans);
+  font-feature-settings: "ss01";
+  -webkit-font-smoothing: antialiased;
+}
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+::selection {
+  background: color-mix(in srgb, var(--focus) 35%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@keyframes pulse-dot {
+  50% {
+    opacity: 0.35;
+  }
+}
+.animate-pulse-dot {
+  animation: pulse-dot 1.4s ease-in-out infinite;
+}

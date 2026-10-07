@@ -1,0 +1,10 @@
+domain_name     = "sieve.example.com"
+certificate_arn = "arn:aws:acm:ca-central-1:123456789012:certificate/REPLACE"
+image_tag       = "REPLACE-with-commit-sha"
+
+github_app_id     = "REPLACE"
+github_app_slug   = "REPLACE"
+github_client_id  = "REPLACE"
+github_repository = "OWNER/REPO"
+
+alarm_email = "REPLACE@example.com"

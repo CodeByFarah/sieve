@@ -1,0 +1,16 @@
+# Deliberately outdated pins: this application is a vulnerable demo target. Never deploy it.
+Flask==0.12.2
+Werkzeug==0.14.1
+Jinja2==2.10
+MarkupSafe==1.0
+itsdangerous==0.24
+click==6.7
+PyYAML==5.3
+requests==2.19.1
+urllib3==1.23
+idna==2.7
+chardet==3.0.4
+certifi==2018.4.16
+PyJWT==1.7.1
+# Left over from a removed thumbnail feature; nothing imports it any more.
+Pillow==8.1.0

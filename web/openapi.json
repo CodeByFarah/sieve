@@ -1,0 +1,3532 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Sieve API",
+    "summary": "Evidence-backed dependency vulnerability triage.",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/healthz": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Healthz",
+        "description": "The process is up. Deliberately checks nothing else, so a database outage does not\ncause the orchestrator to restart healthy API containers.",
+        "operationId": "healthz_healthz_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Liveness"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/readyz": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Readyz",
+        "description": "Ready to serve traffic: database reachable and schema at the expected migration.",
+        "operationId": "readyz_readyz_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Readiness"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Readiness"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Me",
+        "operationId": "me_api_v1_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/github/login": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Login",
+        "operationId": "login_api_v1_auth_github_login_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/github/callback": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Callback",
+        "operationId": "callback_api_v1_auth_github_callback_get",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 200,
+              "title": "Code"
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 200,
+              "title": "State"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Logout",
+        "operationId": "logout_api_v1_auth_logout_post",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          }
+        }
+      }
+    },
+    "/api/v1/orgs/{login}/overview": {
+      "get": {
+        "tags": [
+          "organizations"
+        ],
+        "summary": "Overview",
+        "operationId": "overview_api_v1_orgs__login__overview_get",
+        "parameters": [
+          {
+            "name": "login",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Login"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OverviewOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orgs/{login}/repositories": {
+      "get": {
+        "tags": [
+          "organizations"
+        ],
+        "summary": "Repositories",
+        "operationId": "repositories_api_v1_orgs__login__repositories_get",
+        "parameters": [
+          {
+            "name": "login",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Login"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RepositoryOut"
+                  },
+                  "title": "Response Repositories Api V1 Orgs  Login  Repositories Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orgs/{login}/findings": {
+      "get": {
+        "tags": [
+          "organizations"
+        ],
+        "summary": "Findings",
+        "operationId": "findings_api_v1_orgs__login__findings_get",
+        "parameters": [
+          {
+            "name": "login",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Login"
+            }
+          },
+          {
+            "name": "verdict",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Verdict"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Verdict"
+            }
+          },
+          {
+            "name": "severity",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Severity"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Severity"
+            }
+          },
+          {
+            "name": "kev",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Kev"
+            }
+          },
+          {
+            "name": "package",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 100
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Package"
+            }
+          },
+          {
+            "name": "repository_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Repository Id"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 100
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Q"
+            }
+          },
+          {
+            "name": "presence",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/Presence",
+              "default": "present"
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^(risk|severity|discovered)$",
+              "default": "risk",
+              "title": "Sort"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FindingPage"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orgs/{login}/activity": {
+      "get": {
+        "tags": [
+          "organizations"
+        ],
+        "summary": "Activity",
+        "operationId": "activity_api_v1_orgs__login__activity_get",
+        "parameters": [
+          {
+            "name": "login",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Login"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 100,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Activity Api V1 Orgs  Login  Activity Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orgs/{login}/vex": {
+      "get": {
+        "tags": [
+          "organizations"
+        ],
+        "summary": "Vex Documents",
+        "operationId": "vex_documents_api_v1_orgs__login__vex_get",
+        "parameters": [
+          {
+            "name": "login",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Login"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/VexDocumentOut"
+                  },
+                  "title": "Response Vex Documents Api V1 Orgs  Login  Vex Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orgs/{login}/policy": {
+      "get": {
+        "tags": [
+          "organizations"
+        ],
+        "summary": "Get Policy",
+        "operationId": "get_policy_api_v1_orgs__login__policy_get",
+        "parameters": [
+          {
+            "name": "login",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Login"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PolicyOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "organizations"
+        ],
+        "summary": "Put Policy",
+        "operationId": "put_policy_api_v1_orgs__login__policy_put",
+        "parameters": [
+          {
+            "name": "login",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Login"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PolicyIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PolicyOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orgs/{login}/search": {
+      "get": {
+        "tags": [
+          "organizations"
+        ],
+        "summary": "Search",
+        "operationId": "search_api_v1_orgs__login__search_get",
+        "parameters": [
+          {
+            "name": "login",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Login"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "title": "Q"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/repositories/{repository_id}": {
+      "get": {
+        "tags": [
+          "repositories"
+        ],
+        "summary": "Repository",
+        "operationId": "repository_api_v1_repositories__repository_id__get",
+        "parameters": [
+          {
+            "name": "repository_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Repository Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RepositoryOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/repositories/{repository_id}/scans": {
+      "get": {
+        "tags": [
+          "repositories"
+        ],
+        "summary": "Scans",
+        "operationId": "scans_api_v1_repositories__repository_id__scans_get",
+        "parameters": [
+          {
+            "name": "repository_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Repository Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ScanOut"
+                  },
+                  "title": "Response Scans Api V1 Repositories  Repository Id  Scans Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "repositories"
+        ],
+        "summary": "Rescan",
+        "operationId": "rescan_api_v1_repositories__repository_id__scans_post",
+        "parameters": [
+          {
+            "name": "repository_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Repository Id"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScanOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/repositories/{repository_id}/pull-requests": {
+      "get": {
+        "tags": [
+          "repositories"
+        ],
+        "summary": "Pull Requests",
+        "operationId": "pull_requests_api_v1_repositories__repository_id__pull_requests_get",
+        "parameters": [
+          {
+            "name": "repository_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Repository Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PullRequestCheckOut"
+                  },
+                  "title": "Response Pull Requests Api V1 Repositories  Repository Id  Pull Requests Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/repositories/{repository_id}/vex/preview": {
+      "get": {
+        "tags": [
+          "repositories"
+        ],
+        "summary": "Vex Preview",
+        "description": "The document as it would be generated now. Nothing is stored. Available to every viewer,\nincluding demo visitors.",
+        "operationId": "vex_preview_api_v1_repositories__repository_id__vex_preview_get",
+        "parameters": [
+          {
+            "name": "repository_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Repository Id"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/VexFormat",
+              "default": "openvex"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Vex Preview Api V1 Repositories  Repository Id  Vex Preview Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/repositories/{repository_id}/vex": {
+      "post": {
+        "tags": [
+          "repositories"
+        ],
+        "summary": "Create Vex",
+        "operationId": "create_vex_api_v1_repositories__repository_id__vex_post",
+        "parameters": [
+          {
+            "name": "repository_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Repository Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VexIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VexDocumentOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/scans/{scan_id}": {
+      "get": {
+        "tags": [
+          "scans"
+        ],
+        "summary": "Scan Detail",
+        "operationId": "scan_detail_api_v1_scans__scan_id__get",
+        "parameters": [
+          {
+            "name": "scan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Scan Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScanDetailOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/scans/{scan_id}/events": {
+      "get": {
+        "tags": [
+          "scans"
+        ],
+        "summary": "Scan Events",
+        "description": "Live scan progress. Each event is a read of the scan row \u2014 the pipeline's own record \u2014\nso the stream can never show progress that did not happen.",
+        "operationId": "scan_events_api_v1_scans__scan_id__events_get",
+        "parameters": [
+          {
+            "name": "scan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Scan Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/scans/{scan_id}/sbom": {
+      "get": {
+        "tags": [
+          "scans"
+        ],
+        "summary": "Sbom",
+        "operationId": "sbom_api_v1_scans__scan_id__sbom_get",
+        "parameters": [
+          {
+            "name": "scan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Scan Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/findings/{finding_id}": {
+      "get": {
+        "tags": [
+          "findings"
+        ],
+        "summary": "Get Finding",
+        "operationId": "get_finding_api_v1_findings__finding_id__get",
+        "parameters": [
+          {
+            "name": "finding_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Finding Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FindingDetailOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/findings/{finding_id}/reviews": {
+      "post": {
+        "tags": [
+          "findings"
+        ],
+        "summary": "Review",
+        "operationId": "review_api_v1_findings__finding_id__reviews_post",
+        "parameters": [
+          {
+            "name": "finding_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Finding Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FindingDetailOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/demo": {
+      "get": {
+        "tags": [
+          "demo"
+        ],
+        "summary": "Demo",
+        "operationId": "demo_api_v1_demo_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DemoOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/demo/scans": {
+      "post": {
+        "tags": [
+          "demo"
+        ],
+        "summary": "Run Demo Scan",
+        "operationId": "run_demo_scan_api_v1_demo_scans_post",
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DemoScanOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/advisories/health": {
+      "get": {
+        "tags": [
+          "system"
+        ],
+        "summary": "Advisory Health",
+        "description": "Freshness of each intelligence source. Stale data is reported, never hidden: a scan against\nweek-old advisories should say so.",
+        "operationId": "advisory_health_api_v1_advisories_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SourceHealthOut"
+                  },
+                  "type": "array",
+                  "title": "Response Advisory Health Api V1 Advisories Health Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/vex/{document_id}/download": {
+      "get": {
+        "tags": [
+          "system"
+        ],
+        "summary": "Download Vex",
+        "operationId": "download_vex_api_v1_vex__document_id__download_get",
+        "parameters": [
+          {
+            "name": "document_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Document Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/webhooks/github": {
+      "post": {
+        "tags": [
+          "webhooks"
+        ],
+        "summary": "Github Webhook",
+        "operationId": "github_webhook_webhooks_github_post",
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Github Webhook Webhooks Github Post"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AIExtractionOut": {
+        "properties": {
+          "provider": {
+            "type": "string",
+            "title": "Provider"
+          },
+          "model": {
+            "type": "string",
+            "title": "Model"
+          },
+          "prompt_version": {
+            "type": "string",
+            "title": "Prompt Version"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "latency_ms": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latency Ms"
+          },
+          "output": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Output"
+          }
+        },
+        "type": "object",
+        "required": [
+          "provider",
+          "model",
+          "prompt_version",
+          "status",
+          "created_at",
+          "latency_ms",
+          "output"
+        ],
+        "title": "AIExtractionOut"
+      },
+      "AdvisoryOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "aliases": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Aliases"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summary"
+          },
+          "details": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Details"
+          },
+          "severity": {
+            "$ref": "#/components/schemas/Severity"
+          },
+          "cvss_vector": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cvss Vector"
+          },
+          "cvss_score": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cvss Score"
+          },
+          "references": {
+            "items": {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            "type": "array",
+            "title": "References"
+          },
+          "published_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Published At"
+          },
+          "modified_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Modified At"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "aliases",
+          "summary",
+          "details",
+          "severity",
+          "cvss_vector",
+          "cvss_score",
+          "references",
+          "published_at",
+          "modified_at",
+          "url"
+        ],
+        "title": "AdvisoryOut"
+      },
+      "AnalysisOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "verdict": {
+            "$ref": "#/components/schemas/Verdict"
+          },
+          "confidence": {
+            "$ref": "#/components/schemas/Confidence"
+          },
+          "reasons": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Reasons"
+          },
+          "symbols": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Symbols"
+          },
+          "analyzer_version": {
+            "type": "string",
+            "title": "Analyzer Version"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "scan_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Scan Id"
+          },
+          "paths": {
+            "items": {
+              "$ref": "#/components/schemas/PathOut"
+            },
+            "type": "array",
+            "title": "Paths"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "verdict",
+          "confidence",
+          "reasons",
+          "symbols",
+          "analyzer_version",
+          "created_at",
+          "scan_id",
+          "paths"
+        ],
+        "title": "AnalysisOut"
+      },
+      "AuditEventOut": {
+        "properties": {
+          "seq": {
+            "type": "integer",
+            "title": "Seq"
+          },
+          "action": {
+            "type": "string",
+            "title": "Action"
+          },
+          "actor_type": {
+            "type": "string",
+            "title": "Actor Type"
+          },
+          "actor_login": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actor Login"
+          },
+          "target_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Type"
+          },
+          "target_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Id"
+          },
+          "data": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Data"
+          },
+          "correlation_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Correlation Id"
+          },
+          "occurred_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Occurred At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "seq",
+          "action",
+          "actor_type",
+          "actor_login",
+          "target_type",
+          "target_id",
+          "data",
+          "correlation_id",
+          "occurred_at"
+        ],
+        "title": "AuditEventOut"
+      },
+      "Confidence": {
+        "type": "string",
+        "enum": [
+          "high",
+          "medium",
+          "low"
+        ],
+        "title": "Confidence"
+      },
+      "DemoOut": {
+        "properties": {
+          "organization_login": {
+            "type": "string",
+            "title": "Organization Login"
+          },
+          "repository_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Repository Id"
+          },
+          "latest_scan": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ScanOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "snapshot": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Snapshot"
+          },
+          "symbol_provenance": {
+            "type": "string",
+            "title": "Symbol Provenance"
+          },
+          "ai_enabled": {
+            "type": "boolean",
+            "title": "Ai Enabled"
+          }
+        },
+        "type": "object",
+        "required": [
+          "organization_login",
+          "repository_id",
+          "latest_scan",
+          "snapshot",
+          "symbol_provenance",
+          "ai_enabled"
+        ],
+        "title": "DemoOut"
+      },
+      "DemoScanOut": {
+        "properties": {
+          "scan": {
+            "$ref": "#/components/schemas/ScanOut"
+          },
+          "created": {
+            "type": "boolean",
+            "title": "Created"
+          }
+        },
+        "type": "object",
+        "required": [
+          "scan",
+          "created"
+        ],
+        "title": "DemoScanOut"
+      },
+      "ExploitationOut": {
+        "properties": {
+          "kev": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kev"
+          },
+          "epss": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Epss"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kev",
+          "epss"
+        ],
+        "title": "ExploitationOut"
+      },
+      "FindingDetailOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "advisory_id": {
+            "type": "string",
+            "title": "Advisory Id"
+          },
+          "aliases": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Aliases"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summary"
+          },
+          "package": {
+            "type": "string",
+            "title": "Package"
+          },
+          "installed_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Installed Version"
+          },
+          "severity": {
+            "$ref": "#/components/schemas/Severity"
+          },
+          "cvss_score": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cvss Score"
+          },
+          "verdict": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Verdict"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "effective_verdict": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Verdict"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Confidence"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "review_state": {
+            "$ref": "#/components/schemas/ReviewState"
+          },
+          "risk_score": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Risk Score"
+          },
+          "kev": {
+            "type": "boolean",
+            "title": "Kev"
+          },
+          "epss_percentile": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Epss Percentile"
+          },
+          "presence": {
+            "$ref": "#/components/schemas/Presence"
+          },
+          "repository_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Repository Id"
+          },
+          "repository_full_name": {
+            "type": "string",
+            "title": "Repository Full Name"
+          },
+          "first_seen_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "First Seen At"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "analysis_state": {
+            "type": "string",
+            "title": "Analysis State"
+          },
+          "decided_verdict": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Verdict"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "vex_status": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/VexStatus"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "vex_justification": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/VexJustification"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "advisory": {
+            "$ref": "#/components/schemas/AdvisoryOut"
+          },
+          "risk_breakdown": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Risk Breakdown"
+          },
+          "exploitation": {
+            "$ref": "#/components/schemas/ExploitationOut"
+          },
+          "analysis": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AnalysisOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "symbols": {
+            "items": {
+              "$ref": "#/components/schemas/SymbolOut"
+            },
+            "type": "array",
+            "title": "Symbols"
+          },
+          "symbol_provenance": {
+            "type": "string",
+            "title": "Symbol Provenance"
+          },
+          "reviews": {
+            "items": {
+              "$ref": "#/components/schemas/ReviewOut"
+            },
+            "type": "array",
+            "title": "Reviews"
+          },
+          "timeline": {
+            "items": {
+              "$ref": "#/components/schemas/AuditEventOut"
+            },
+            "type": "array",
+            "title": "Timeline"
+          },
+          "vex_preview": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Vex Preview"
+          },
+          "can_review": {
+            "type": "boolean",
+            "title": "Can Review"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "advisory_id",
+          "aliases",
+          "summary",
+          "package",
+          "installed_version",
+          "severity",
+          "cvss_score",
+          "verdict",
+          "effective_verdict",
+          "confidence",
+          "review_state",
+          "risk_score",
+          "kev",
+          "epss_percentile",
+          "presence",
+          "repository_id",
+          "repository_full_name",
+          "first_seen_at",
+          "version",
+          "analysis_state",
+          "decided_verdict",
+          "vex_status",
+          "vex_justification",
+          "advisory",
+          "risk_breakdown",
+          "exploitation",
+          "analysis",
+          "symbols",
+          "symbol_provenance",
+          "reviews",
+          "timeline",
+          "vex_preview",
+          "can_review"
+        ],
+        "title": "FindingDetailOut"
+      },
+      "FindingItemOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "advisory_id": {
+            "type": "string",
+            "title": "Advisory Id"
+          },
+          "aliases": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Aliases"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summary"
+          },
+          "package": {
+            "type": "string",
+            "title": "Package"
+          },
+          "installed_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Installed Version"
+          },
+          "severity": {
+            "$ref": "#/components/schemas/Severity"
+          },
+          "cvss_score": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cvss Score"
+          },
+          "verdict": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Verdict"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "effective_verdict": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Verdict"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Confidence"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "review_state": {
+            "$ref": "#/components/schemas/ReviewState"
+          },
+          "risk_score": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Risk Score"
+          },
+          "kev": {
+            "type": "boolean",
+            "title": "Kev"
+          },
+          "epss_percentile": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Epss Percentile"
+          },
+          "presence": {
+            "$ref": "#/components/schemas/Presence"
+          },
+          "repository_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Repository Id"
+          },
+          "repository_full_name": {
+            "type": "string",
+            "title": "Repository Full Name"
+          },
+          "first_seen_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "First Seen At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "advisory_id",
+          "aliases",
+          "summary",
+          "package",
+          "installed_version",
+          "severity",
+          "cvss_score",
+          "verdict",
+          "effective_verdict",
+          "confidence",
+          "review_state",
+          "risk_score",
+          "kev",
+          "epss_percentile",
+          "presence",
+          "repository_id",
+          "repository_full_name",
+          "first_seen_at"
+        ],
+        "title": "FindingItemOut"
+      },
+      "FindingPage": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/FindingItemOut"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "next_cursor"
+        ],
+        "title": "FindingPage"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "Liveness": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "const": "ok",
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "title": "Liveness"
+      },
+      "ManifestOut": {
+        "properties": {
+          "path": {
+            "type": "string",
+            "title": "Path"
+          },
+          "format": {
+            "type": "string",
+            "title": "Format"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "required": [
+          "path",
+          "format",
+          "status",
+          "detail"
+        ],
+        "title": "ManifestOut"
+      },
+      "MeOut": {
+        "properties": {
+          "user": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/UserOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "organizations": {
+            "items": {
+              "$ref": "#/components/schemas/OrganizationOut"
+            },
+            "type": "array",
+            "title": "Organizations"
+          },
+          "github_login_enabled": {
+            "type": "boolean",
+            "title": "Github Login Enabled"
+          },
+          "github_install_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Github Install Url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user",
+          "organizations",
+          "github_login_enabled",
+          "github_install_url"
+        ],
+        "title": "MeOut"
+      },
+      "OrganizationOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "login": {
+            "type": "string",
+            "title": "Login"
+          },
+          "account_type": {
+            "type": "string",
+            "title": "Account Type"
+          },
+          "role": {
+            "$ref": "#/components/schemas/Role"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "login",
+          "account_type",
+          "role"
+        ],
+        "title": "OrganizationOut"
+      },
+      "OverviewOut": {
+        "properties": {
+          "organization": {
+            "$ref": "#/components/schemas/OrganizationOut"
+          },
+          "totals": {
+            "$ref": "#/components/schemas/VerdictCounts"
+          },
+          "severity": {
+            "items": {
+              "$ref": "#/components/schemas/SeverityBreakdown"
+            },
+            "type": "array",
+            "title": "Severity"
+          },
+          "kev_findings": {
+            "items": {
+              "$ref": "#/components/schemas/FindingItemOut"
+            },
+            "type": "array",
+            "title": "Kev Findings"
+          },
+          "top_findings": {
+            "items": {
+              "$ref": "#/components/schemas/FindingItemOut"
+            },
+            "type": "array",
+            "title": "Top Findings"
+          },
+          "repositories": {
+            "items": {
+              "$ref": "#/components/schemas/RepositoryOut"
+            },
+            "type": "array",
+            "title": "Repositories"
+          },
+          "activity": {
+            "items": {
+              "$ref": "#/components/schemas/AuditEventOut"
+            },
+            "type": "array",
+            "title": "Activity"
+          }
+        },
+        "type": "object",
+        "required": [
+          "organization",
+          "totals",
+          "severity",
+          "kev_findings",
+          "top_findings",
+          "repositories",
+          "activity"
+        ],
+        "title": "OverviewOut"
+      },
+      "PathOut": {
+        "properties": {
+          "rank": {
+            "type": "integer",
+            "title": "Rank"
+          },
+          "entrypoint_kind": {
+            "type": "string",
+            "title": "Entrypoint Kind"
+          },
+          "steps": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Steps"
+          }
+        },
+        "type": "object",
+        "required": [
+          "rank",
+          "entrypoint_kind",
+          "steps"
+        ],
+        "title": "PathOut"
+      },
+      "PolicyIn": {
+        "properties": {
+          "rules": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Rules"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "rules"
+        ],
+        "title": "PolicyIn"
+      },
+      "PolicyOut": {
+        "properties": {
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "rules": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Rules"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "history": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "History"
+          },
+          "can_edit": {
+            "type": "boolean",
+            "title": "Can Edit"
+          }
+        },
+        "type": "object",
+        "required": [
+          "version",
+          "rules",
+          "created_at",
+          "history",
+          "can_edit"
+        ],
+        "title": "PolicyOut"
+      },
+      "Presence": {
+        "type": "string",
+        "enum": [
+          "present",
+          "resolved"
+        ],
+        "title": "Presence"
+      },
+      "PullRequestCheckOut": {
+        "properties": {
+          "pr_number": {
+            "type": "integer",
+            "title": "Pr Number"
+          },
+          "head_sha": {
+            "type": "string",
+            "title": "Head Sha"
+          },
+          "conclusion": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Conclusion"
+          },
+          "summary": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Summary"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "pr_number",
+          "head_sha",
+          "conclusion",
+          "summary",
+          "created_at"
+        ],
+        "title": "PullRequestCheckOut"
+      },
+      "Readiness": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "failing"
+            ],
+            "title": "Status"
+          },
+          "checks": {
+            "additionalProperties": {
+              "type": "string",
+              "enum": [
+                "ok",
+                "failing"
+              ]
+            },
+            "type": "object",
+            "title": "Checks"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "checks"
+        ],
+        "title": "Readiness"
+      },
+      "RepositoryOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "full_name": {
+            "type": "string",
+            "title": "Full Name"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "default_branch": {
+            "type": "string",
+            "title": "Default Branch"
+          },
+          "is_private": {
+            "type": "boolean",
+            "title": "Is Private"
+          },
+          "latest_scan": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ScanOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "counts": {
+            "$ref": "#/components/schemas/VerdictCounts"
+          },
+          "health": {
+            "type": "string",
+            "enum": [
+              "healthy",
+              "attention",
+              "failing",
+              "pending"
+            ],
+            "title": "Health"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "full_name",
+          "source",
+          "default_branch",
+          "is_private",
+          "latest_scan",
+          "counts",
+          "health"
+        ],
+        "title": "RepositoryOut"
+      },
+      "ReviewIn": {
+        "properties": {
+          "expected_version": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Expected Version"
+          },
+          "decided_verdict": {
+            "$ref": "#/components/schemas/Verdict"
+          },
+          "vex_status": {
+            "$ref": "#/components/schemas/VexStatus"
+          },
+          "justification": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/VexJustification"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "comment": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comment"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "expected_version",
+          "decided_verdict",
+          "vex_status"
+        ],
+        "title": "ReviewIn"
+      },
+      "ReviewOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "reviewer_login": {
+            "type": "string",
+            "title": "Reviewer Login"
+          },
+          "previous_verdict": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Verdict"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "decided_verdict": {
+            "$ref": "#/components/schemas/Verdict"
+          },
+          "vex_status": {
+            "$ref": "#/components/schemas/VexStatus"
+          },
+          "justification": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/VexJustification"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "comment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comment"
+          },
+          "analysis_result_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Analysis Result Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "reviewer_login",
+          "previous_verdict",
+          "decided_verdict",
+          "vex_status",
+          "justification",
+          "comment",
+          "analysis_result_id",
+          "created_at"
+        ],
+        "title": "ReviewOut"
+      },
+      "ReviewState": {
+        "type": "string",
+        "enum": [
+          "unreviewed",
+          "accepted",
+          "overridden",
+          "stale"
+        ],
+        "title": "ReviewState"
+      },
+      "Role": {
+        "type": "string",
+        "enum": [
+          "owner",
+          "admin",
+          "member",
+          "viewer"
+        ],
+        "title": "Role"
+      },
+      "ScanDetailOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "repository_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Repository Id"
+          },
+          "commit_sha": {
+            "type": "string",
+            "title": "Commit Sha"
+          },
+          "ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ref"
+          },
+          "trigger": {
+            "$ref": "#/components/schemas/ScanTrigger"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ScanStatus"
+          },
+          "stage": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stage"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "started_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Started At"
+          },
+          "finished_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finished At"
+          },
+          "stats": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Stats"
+          },
+          "error_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Code"
+          },
+          "error_message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Message"
+          },
+          "progress": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Progress"
+          },
+          "stages": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Stages"
+          },
+          "repository_full_name": {
+            "type": "string",
+            "title": "Repository Full Name"
+          },
+          "sbom_available": {
+            "type": "boolean",
+            "title": "Sbom Available"
+          },
+          "manifests": {
+            "items": {
+              "$ref": "#/components/schemas/ManifestOut"
+            },
+            "type": "array",
+            "title": "Manifests"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "repository_id",
+          "commit_sha",
+          "ref",
+          "trigger",
+          "status",
+          "stage",
+          "created_at",
+          "started_at",
+          "finished_at",
+          "stats",
+          "error_code",
+          "error_message",
+          "progress",
+          "stages",
+          "repository_full_name",
+          "sbom_available",
+          "manifests"
+        ],
+        "title": "ScanDetailOut"
+      },
+      "ScanOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "repository_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Repository Id"
+          },
+          "commit_sha": {
+            "type": "string",
+            "title": "Commit Sha"
+          },
+          "ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ref"
+          },
+          "trigger": {
+            "$ref": "#/components/schemas/ScanTrigger"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ScanStatus"
+          },
+          "stage": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stage"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "started_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Started At"
+          },
+          "finished_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finished At"
+          },
+          "stats": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Stats"
+          },
+          "error_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Code"
+          },
+          "error_message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "repository_id",
+          "commit_sha",
+          "ref",
+          "trigger",
+          "status",
+          "stage",
+          "created_at",
+          "started_at",
+          "finished_at",
+          "stats",
+          "error_code",
+          "error_message"
+        ],
+        "title": "ScanOut"
+      },
+      "ScanStatus": {
+        "type": "string",
+        "enum": [
+          "queued",
+          "running",
+          "succeeded",
+          "failed",
+          "cancelled"
+        ],
+        "title": "ScanStatus"
+      },
+      "ScanTrigger": {
+        "type": "string",
+        "enum": [
+          "manual",
+          "push",
+          "pull_request",
+          "advisory",
+          "schedule",
+          "demo"
+        ],
+        "title": "ScanTrigger"
+      },
+      "SearchOut": {
+        "properties": {
+          "repositories": {
+            "items": {
+              "$ref": "#/components/schemas/RepositoryOut"
+            },
+            "type": "array",
+            "title": "Repositories"
+          },
+          "findings": {
+            "items": {
+              "$ref": "#/components/schemas/FindingItemOut"
+            },
+            "type": "array",
+            "title": "Findings"
+          },
+          "packages": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Packages"
+          }
+        },
+        "type": "object",
+        "required": [
+          "repositories",
+          "findings",
+          "packages"
+        ],
+        "title": "SearchOut"
+      },
+      "Severity": {
+        "type": "string",
+        "enum": [
+          "critical",
+          "high",
+          "medium",
+          "low",
+          "unknown"
+        ],
+        "title": "Severity"
+      },
+      "SeverityBreakdown": {
+        "properties": {
+          "severity": {
+            "$ref": "#/components/schemas/Severity"
+          },
+          "reachable": {
+            "type": "integer",
+            "title": "Reachable"
+          },
+          "needs_review": {
+            "type": "integer",
+            "title": "Needs Review"
+          },
+          "not_reached": {
+            "type": "integer",
+            "title": "Not Reached"
+          }
+        },
+        "type": "object",
+        "required": [
+          "severity",
+          "reachable",
+          "needs_review",
+          "not_reached"
+        ],
+        "title": "SeverityBreakdown"
+      },
+      "SourceHealthOut": {
+        "properties": {
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "last_run_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Run At"
+          },
+          "last_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Status"
+          },
+          "last_success_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Success At"
+          },
+          "records_seen": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Records Seen"
+          },
+          "unresolved_failures": {
+            "type": "integer",
+            "title": "Unresolved Failures"
+          },
+          "stale": {
+            "type": "boolean",
+            "title": "Stale"
+          }
+        },
+        "type": "object",
+        "required": [
+          "source",
+          "last_run_at",
+          "last_status",
+          "last_success_at",
+          "records_seen",
+          "unresolved_failures",
+          "stale"
+        ],
+        "title": "SourceHealthOut"
+      },
+      "SymbolKind": {
+        "type": "string",
+        "enum": [
+          "function",
+          "method",
+          "class",
+          "module"
+        ],
+        "title": "SymbolKind"
+      },
+      "SymbolOrigin": {
+        "type": "string",
+        "enum": [
+          "advisory",
+          "ai",
+          "curated",
+          "reviewer"
+        ],
+        "title": "SymbolOrigin"
+      },
+      "SymbolOut": {
+        "properties": {
+          "qualified_name": {
+            "type": "string",
+            "title": "Qualified Name"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/SymbolKind"
+          },
+          "origin": {
+            "$ref": "#/components/schemas/SymbolOrigin"
+          },
+          "verification": {
+            "$ref": "#/components/schemas/SymbolVerification"
+          },
+          "verification_detail": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Verification Detail"
+          },
+          "ai_extraction": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AIExtractionOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "qualified_name",
+          "kind",
+          "origin",
+          "verification",
+          "verification_detail",
+          "ai_extraction"
+        ],
+        "title": "SymbolOut"
+      },
+      "SymbolVerification": {
+        "type": "string",
+        "enum": [
+          "verified",
+          "rejected",
+          "unverified"
+        ],
+        "title": "SymbolVerification"
+      },
+      "UserOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "login": {
+            "type": "string",
+            "title": "Login"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "avatar_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avatar Url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "login",
+          "name",
+          "avatar_url"
+        ],
+        "title": "UserOut"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "Verdict": {
+        "type": "string",
+        "enum": [
+          "reachable",
+          "not_reached",
+          "needs_review"
+        ],
+        "title": "Verdict"
+      },
+      "VerdictCounts": {
+        "properties": {
+          "total": {
+            "type": "integer",
+            "title": "Total",
+            "default": 0
+          },
+          "reachable": {
+            "type": "integer",
+            "title": "Reachable",
+            "default": 0
+          },
+          "needs_review": {
+            "type": "integer",
+            "title": "Needs Review",
+            "default": 0
+          },
+          "not_reached": {
+            "type": "integer",
+            "title": "Not Reached",
+            "default": 0
+          },
+          "pending": {
+            "type": "integer",
+            "title": "Pending",
+            "default": 0
+          },
+          "kev": {
+            "type": "integer",
+            "title": "Kev",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "title": "VerdictCounts"
+      },
+      "VexDocumentOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "format": {
+            "$ref": "#/components/schemas/VexFormat"
+          },
+          "repository_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Repository Id"
+          },
+          "repository_full_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Repository Full Name"
+          },
+          "statement_count": {
+            "type": "integer",
+            "title": "Statement Count"
+          },
+          "sha256": {
+            "type": "string",
+            "title": "Sha256"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "format",
+          "repository_id",
+          "repository_full_name",
+          "statement_count",
+          "sha256",
+          "created_at"
+        ],
+        "title": "VexDocumentOut"
+      },
+      "VexFormat": {
+        "type": "string",
+        "enum": [
+          "openvex",
+          "cyclonedx"
+        ],
+        "title": "VexFormat"
+      },
+      "VexIn": {
+        "properties": {
+          "format": {
+            "$ref": "#/components/schemas/VexFormat"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "format"
+        ],
+        "title": "VexIn"
+      },
+      "VexJustification": {
+        "type": "string",
+        "enum": [
+          "component_not_present",
+          "vulnerable_code_not_present",
+          "vulnerable_code_not_in_execute_path",
+          "vulnerable_code_cannot_be_controlled_by_adversary",
+          "inline_mitigations_already_exist"
+        ],
+        "title": "VexJustification",
+        "description": "OpenVEX justification values for ``not_affected`` statements."
+      },
+      "VexStatus": {
+        "type": "string",
+        "enum": [
+          "not_affected",
+          "affected",
+          "fixed",
+          "under_investigation"
+        ],
+        "title": "VexStatus"
+      }
+    }
+  }
+}

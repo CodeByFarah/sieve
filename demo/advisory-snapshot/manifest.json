@@ -1,0 +1,28 @@
+{
+  "advisories": 188,
+  "cves": 98,
+  "dependencies": [
+    "certifi==2018.4.16",
+    "chardet==3.0.4",
+    "click==6.7",
+    "flask==0.12.2",
+    "idna==2.7",
+    "itsdangerous==0.24",
+    "jinja2==2.10",
+    "markupsafe==1.0",
+    "pillow==8.1.0",
+    "pyjwt==1.7.1",
+    "pyyaml==5.3",
+    "requests==2.19.1",
+    "urllib3==1.23",
+    "werkzeug==0.14.1"
+  ],
+  "epss_scores": 97,
+  "fetched_at": "2026-10-06T09:27:20+00:00",
+  "kev_matches": 1,
+  "sources": {
+    "epss": "https://api.first.org/data/v1/epss",
+    "kev": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json",
+    "osv": "https://api.osv.dev/v1/querybatch"
+  }
+}

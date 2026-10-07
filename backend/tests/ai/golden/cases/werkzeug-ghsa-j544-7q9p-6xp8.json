@@ -1,0 +1,27 @@
+{
+  "id": "werkzeug-ghsa-j544-7q9p-6xp8",
+  "advisory": {
+    "id": "GHSA-j544-7q9p-6xp8",
+    "summary": "Pallets Werkzeug vulnerable to Path Traversal",
+    "details": "In Pallets Werkzeug before 0.15.5, SharedDataMiddleware mishandles drive names (such as C:) in Windows pathnames.",
+    "references": [
+      "https://nvd.nist.gov/vuln/detail/CVE-2019-14322",
+      "https://github.com/pallets/werkzeug",
+      "https://palletsprojects.com/blog/werkzeug-0-15-5-released"
+    ]
+  },
+  "package": {
+    "name": "werkzeug",
+    "vulnerable_version": "0.14.1"
+  },
+  "fix_diff": null,
+  "expected": [
+    "werkzeug.security.safe_join"
+  ],
+  "acceptable": [],
+  "unacceptable": [],
+  "label_source": "curated (sieve/symbols/curated.json): safe_join did not reject Windows drive-relative paths, enabling traversal on Windows.",
+  "tags": [
+    "no_fix_diff"
+  ]
+}

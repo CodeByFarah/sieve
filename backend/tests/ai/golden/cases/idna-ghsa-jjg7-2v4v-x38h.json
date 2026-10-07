@@ -1,0 +1,35 @@
+{
+  "id": "idna-ghsa-jjg7-2v4v-x38h",
+  "advisory": {
+    "id": "GHSA-jjg7-2v4v-x38h",
+    "summary": "Internationalized Domain Names in Applications (IDNA) vulnerable to denial of service from specially crafted inputs to idna.encode",
+    "details": "### Impact\nA specially crafted argument to the `idna.encode()` function could consume significant resources. This may lead to a denial-of-service.\n\n### Patches\nThe function has been refined to reject such strings without the associated resource consumption in version 3.7.\n\n### Workarounds\nDomain names cannot exceed 253 characters in length, if this length limit is enforced prior to passing the domain to the `idna.encode()` function it should no longer consume significant resources. This is triggered by arbitrarily large inputs that would not occur in normal usage, but may be passed to the library assuming there is no preliminary input validation by the higher-level application.\n\n### References\n* https://huntr.com/bounties/93d78d07-d791-4b39-a845-cbfabc44aadb",
+    "references": [
+      "https://github.com/kjd/idna/security/advisories/GHSA-jjg7-2v4v-x38h",
+      "https://nvd.nist.gov/vuln/detail/CVE-2024-3651",
+      "https://github.com/kjd/idna/commit/1d365e17e10d72d0b7876316fc7b9ca0eebdd38d",
+      "https://github.com/kjd/idna",
+      "https://github.com/pypa/advisory-database/tree/main/vulns/idna/PYSEC-2024-60.yaml",
+      "https://huntr.com/bounties/93d78d07-d791-4b39-a845-cbfabc44aadb",
+      "https://lists.debian.org/debian-lts-announce/2024/05/msg00006.html",
+      "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/4YQUPYH3SVZ5GFF2CDQ55FCM575AZTF2",
+      "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/F2S5E23N6E52S46KGNYTDFB75LOC4N4D",
+      "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/S5IDLLD2IKSIVRBSLB34WTSYGLMWUFWF",
+      "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ULSC7HBJKXB3BZV367WM5BR6DFEC4Z43"
+    ]
+  },
+  "package": {
+    "name": "idna",
+    "vulnerable_version": "2.7"
+  },
+  "fix_diff": "diff --git a/HISTORY.rst b/HISTORY.rst\nindex eea8a70..76dc8bc 100644\n--- a/HISTORY.rst\n+++ b/HISTORY.rst\n@@ -3,6 +3,14 @@\n History\n -------\n \n+3.7 (2024-04-11)\n+++++++++++++++++\n+\n+- Fix issue where specially crafted inputs to encode() could\n+  take exceptionally long amount of time to process. [CVE-2024-3651]\n+\n+Thanks to Guido Vranken for reporting the issue.\n+\n 3.6 (2023-11-25)\n ++++++++++++++++\n \ndiff --git a/LICENSE.md b/LICENSE.md\nindex ce36701..19b6b45 100644\n--- a/LICENSE.md\n+++ b/LICENSE.md\n@@ -1,6 +1,6 @@\n BSD 3-Clause License\n \n-Copyright (c) 2013-2023, Kim Davies and contributors.\n+Copyright (c) 2013-2024, Kim Davies and contributors.\n All rights reserved.\n \n Redistribution and use in source and binary forms, with or without\ndiff --git a/idna/package_data.py b/idna/package_data.py\nindex c5b7220..ed81113 100644\n--- a/idna/package_data.py\n+++ b/idna/package_data.py\n@@ -1,2 +1,2 @@\n-__version__ = '3.6'\n+__version__ = '3.7'\n \n",
+  "expected": [
+    "idna.core.encode"
+  ],
+  "acceptable": [],
+  "unacceptable": [],
+  "label_source": "curated (sieve/symbols/curated.json): Specially crafted long inputs to idna.encode took quadratic time.",
+  "tags": [
+    "has_fix_diff"
+  ]
+}

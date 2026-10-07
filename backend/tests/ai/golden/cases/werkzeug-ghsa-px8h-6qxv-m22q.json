@@ -1,0 +1,32 @@
+{
+  "id": "werkzeug-ghsa-px8h-6qxv-m22q",
+  "advisory": {
+    "id": "GHSA-px8h-6qxv-m22q",
+    "summary": "Incorrect parsing of nameless cookies leads to __Host- cookies bypass",
+    "details": "Browsers may allow \"nameless\" cookies that look like `=value` instead of `key=value`. A vulnerable browser may allow a compromised application on an adjacent subdomain to exploit this to set a cookie like `=__Host-test=bad` for another subdomain.\n\nWerkzeug <= 2.2.2 will parse the cookie `=__Host-test=bad` as `__Host-test=bad`. If a Werkzeug application is running next to a vulnerable or malicious subdomain which sets such a cookie using a vulnerable browser, the Werkzeug application will see the bad cookie value but the valid cookie key.",
+    "references": [
+      "https://github.com/pallets/werkzeug/security/advisories/GHSA-px8h-6qxv-m22q",
+      "https://nvd.nist.gov/vuln/detail/CVE-2023-23934",
+      "https://github.com/pallets/werkzeug/commit/cf275f42acad1b5950c50ffe8ef58fe62cdce028",
+      "https://github.com/pallets/werkzeug",
+      "https://github.com/pallets/werkzeug/releases/tag/2.2.3",
+      "https://github.com/pypa/advisory-database/tree/main/vulns/werkzeug/PYSEC-2023-57.yaml",
+      "https://security.netapp.com/advisory/ntap-20230818-0003",
+      "https://www.debian.org/security/2023/dsa-5470"
+    ]
+  },
+  "package": {
+    "name": "werkzeug",
+    "vulnerable_version": "0.14.1"
+  },
+  "fix_diff": "diff --git a/CHANGES.rst b/CHANGES.rst\nindex 0d402a3ea..470f70cf7 100644\n--- a/CHANGES.rst\n+++ b/CHANGES.rst\n@@ -19,6 +19,8 @@ Unreleased\n     :issue:`2529`\n -   ``LimitedStream.read`` works correctly when wrapping a stream that may not return\n     the requested size in one ``read`` call. :issue:`2558`\n+-   A cookie header that starts with ``=`` is treated as an empty key and discarded,\n+    rather than stripping the leading ``==``.\n \n \n Version 2.2.2\ndiff --git a/src/werkzeug/_internal.py b/src/werkzeug/_internal.py\nindex 4636647db..f95207ab2 100644\n--- a/src/werkzeug/_internal.py\n+++ b/src/werkzeug/_internal.py\n@@ -34,7 +34,7 @@\n _legal_cookie_chars_re = rb\"[\\w\\d!#%&\\'~_`><@,:/\\$\\*\\+\\-\\.\\^\\|\\)\\(\\?\\}\\{\\=]\"\n _cookie_re = re.compile(\n     rb\"\"\"\n-    (?P<key>[^=;]+)\n+    (?P<key>[^=;]*)\n     (?:\\s*=\\s*\n         (?P<val>\n             \"(?:[^\\\\\"]|\\\\.)*\" |\n@@ -382,16 +382,21 @@ def _cookie_parse_impl(b: bytes) -> t.Iterator[t.Tuple[bytes, bytes]]:\n     \"\"\"Lowlevel cookie parsing facility that operates on bytes.\"\"\"\n     i = 0\n     n = len(b)\n+    b += b\";\"\n \n     while i < n:\n-        match = _cookie_re.search(b + b\";\", i)\n+        match = _cookie_re.match(b, i)\n+\n         if not match:\n             break\n \n-        key = match.group(\"key\").strip()\n-        value = match.group(\"val\") or b\"\"\n         i = match.end(0)\n+        key = match.group(\"key\").strip()\n+\n+        if not key:\n+            continue\n \n+        value = match.group(\"val\") or b\"\"\n         yield key, _cookie_unquote(value)\n \n \ndiff --git a/src/werkzeug/sansio/http.py b/src/werkzeug/sansio/http.py\nindex 8288882b7..6b2273832 100644\n--- a/src/werkzeug/sansio/http.py\n+++ b/src/werkzeug/sansio/http.py\n@@ -126,10 +126,6 @@ def parse_cookie(\n     def _parse_pairs() -> t.Iterator[t.Tuple[str, str]]:\n         for key, val in _cookie_parse_impl(cookie):  # type: ignore\n             key_str = _to_str(key, charset, errors, allow_none_charset=True)\n-\n-            if not key_str:\n-                continue\n-\n             val_str = _to_str(val, charset, errors, allow_none_charset=True)\n             yield key_str, val_str\n \ndiff --git a/tests/test_http.py b/tests/test_http.py\nindex 8de614422..61940a17c 100644\n--- a/tests/test_http.py\n+++ b/tests/test_http.py\n@@ -412,7 +412,8 @@ def test_is_resource_modified_for_range_requests(self):\n     def test_parse_cookie(self):\n         cookies = http.parse_cookie(\n             \"dismiss-top=6; CP=null*; PHPSESSID=0a539d42abc001cdc762809248d4beed;\"\n-            'a=42; b=\"\\\\\";\"; ; fo234{=bar;blub=Blah; \"__Secure-c\"=d'\n+            'a=42; b=\"\\\\\";\"; ; fo234{=bar;blub=Blah; \"__Secure-c\"=d;'\n+            \"==__Host-eq=bad;__Host-eq=good;\"\n         )\n         assert cookies.to_dict() == {\n             \"CP\": \"null*\",\n@@ -423,6 +424,7 @@ def test_parse_cookie(self):\n             \"fo234{\": \"bar\",\n             \"blub\": \"Blah\",\n             '\"__Secure-c\"': \"d\",\n+            \"__Host-eq\": \"good\",\n         }\n \n     def test_dump_cookie(self):\n",
+  "expected": [
+    "werkzeug.http.parse_cookie"
+  ],
+  "acceptable": [],
+  "unacceptable": [],
+  "label_source": "curated (sieve/symbols/curated.json): Nameless cookies were parsed as if they had a name, bypassing __Host- prefix protection.",
+  "tags": [
+    "has_fix_diff"
+  ]
+}
