@@ -1,10 +1,10 @@
 # Next.js frontend, built as a standalone server. Build context: repository root.
-FROM node:22-alpine AS deps
+FROM node:26-alpine AS deps
 WORKDIR /web
 COPY web/package.json web/package-lock.json ./
 RUN npm ci
 
-FROM node:22-alpine AS build
+FROM node:26-alpine AS build
 WORKDIR /web
 # Rewrites (/api -> API) are resolved at build time, so the API origin is a build argument.
 ARG SIEVE_API_URL=http://api:8000
@@ -13,7 +13,7 @@ COPY --from=deps /web/node_modules ./node_modules
 COPY web/ ./
 RUN npm run build
 
-FROM node:22-alpine AS runtime
+FROM node:26-alpine AS runtime
 WORKDIR /web
 ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 PORT=3000 HOSTNAME=0.0.0.0
 RUN addgroup -S -g 10001 sieve && adduser -S -u 10001 -G sieve sieve
