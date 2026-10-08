@@ -20,14 +20,14 @@ dependencies = [
     "opentelemetry-sdk>=1.45.0",
     "packaging>=24.1",
     "prometheus-client>=0.26.0",
-    "psycopg[binary]>=3.2",
+    "psycopg[binary]>=3.3.6",
     "pydantic>=2.8",
     "pydantic-settings>=2.4",
-    "pyjwt[crypto]>=2.9",
+    "pyjwt[crypto]>=2.15.1",
     "redis>=5.2",
     "sqlalchemy>=2.0.32",
     "structlog>=24.4",
-    "uvicorn[standard]>=0.30",
+    "uvicorn[standard]>=0.54.0",
 ]
 
 [project.scripts]
@@ -37,7 +37,7 @@ sieve-worker = "sieve.worker.__main__:main"
 dev = [
     "boto3-stubs[s3]>=1.43.108",
     "httpx2",  # used by starlette.testclient
-    "moto[s3]>=5",
+    "moto[s3]>=5.2.3",
     "mypy>=1.11",
     "pytest>=8.3",
     "pytest-cov>=5.0",
