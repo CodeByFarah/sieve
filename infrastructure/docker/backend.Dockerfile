@@ -1,5 +1,5 @@
 # One image, two roles: `api` (uvicorn) and `worker` (python -m sieve.worker).
-FROM python:3.13-slim AS build
+FROM python:3.14-slim AS build
 
 COPY --from=ghcr.io/astral-sh/uv:0.12.23 /uv /bin/uv
 ENV UV_COMPILE_BYTECODE=1 \
@@ -18,7 +18,7 @@ COPY backend/alembic.ini ./
 RUN uv sync --frozen --no-dev
 
 
-FROM python:3.13-slim AS runtime
+FROM python:3.14-slim AS runtime
 
 RUN useradd --system --uid 10001 --no-create-home sieve
 WORKDIR /app
